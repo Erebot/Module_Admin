@@ -16,11 +16,11 @@
     along with Erebot.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class   ErebotModule_Admin
-extends ErebotModuleBase
+class   Erebot_Module_Admin
+extends Erebot_Module_Base
 {
     static protected $_metadata = array(
-        'requires'  =>  array('TriggerRegistry'),
+        'requires'  =>  array('Erebot_Module_TriggerRegistry'),
     );
     protected $_handlers;
     protected $_triggers;
@@ -28,9 +28,11 @@ extends ErebotModuleBase
     public function reload($flags)
     {
         if ($flags & self::RELOAD_HANDLERS) {
-            $registry   = $this->_connection->getModule('TriggerRegistry',
-                                ErebotConnection::MODULE_BY_NAME);
-            $matchAny  = ErebotUtils::getVStatic($registry, 'MATCH_ANY');
+            $registry   = $this->_connection->getModule(
+                'Erebot_Module_TriggerRegistry',
+                Erebot_Connection::MODULE_BY_NAME
+            );
+            $matchAny  = Erebot_Utils::getVStatic($registry, 'MATCH_ANY');
 
             if (!($flags & self::RELOAD_INIT)) {
                 foreach ($this->_triggers as $name => $value) {
@@ -63,18 +65,19 @@ extends ErebotModuleBase
                     $message    = $this->gettext('Could not register trigger '.
                                     'for admin command "<var name="command"'.
                                     '/>"');
-                    $tpl        = ErebotStyling($message, $this->_translator);
+                    $tpl        = Erebot_Styling($message, $this->_translator);
                     $tpl->assign('command', $default);
                     throw new Exception($tpl->render());
                 }
 
-                $filter = new ErebotTextFilter($this->_mainCfg);
-                $filter->addPattern(ErebotTextFilter::TYPE_STATIC,      $trigger, TRUE);
-                $filter->addPattern(ErebotTextFilter::TYPE_WILDCARD,    $trigger.' *', TRUE);
-                $this->_handlers[$default]   =   new ErebotEventHandler(
-                                                    array($this, $handler),
-                                                    'iErebotEventMessageText',
-                                                    NULL, $filter);
+                $filter = new Erebot_TextFilter($this->_mainCfg);
+                $filter->addPattern(Erebot_TextFilter::TYPE_STATIC,      $trigger, TRUE);
+                $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' *', TRUE);
+                $this->_handlers[$default] = new Erebot_EventHandler(
+                    array($this, $handler),
+                    'Erebot_Interface_Event_TextMessage',
+                    NULL, $filter
+                );
                 $this->_connection->addEventHandler($this->_handlers[$default]);
             }
 
@@ -87,13 +90,14 @@ extends ErebotModuleBase
                 throw new Exception($message);
             }
 
-            $filter = new ErebotTextFilter($this->_mainCfg);
-            $filter->addPattern(ErebotTextFilter::TYPE_WILDCARD,    $trigger.' &',      TRUE);
-            $filter->addPattern(ErebotTextFilter::TYPE_WILDCARD,    $trigger.' & *',    TRUE);
-            $this->_handlers['join'] =   new ErebotEventHandler(
-                                            array($this, 'handleJoin'),
-                                            'iErebotEventMessageText',
-                                            NULL, $filter);
+            $filter = new Erebot_TextFilter($this->_mainCfg);
+            $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' &',      TRUE);
+            $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' & *',    TRUE);
+            $this->_handlers['join'] = new Erebot_EventHandler(
+                array($this, 'handleJoin'),
+                'Erebot_Interface_Event_TextMessage',
+                NULL, $filter
+            );
             $this->_connection->addEventHandler($this->_handlers['join']);
 
             // Reload
@@ -105,22 +109,23 @@ extends ErebotModuleBase
                 throw new Exception($message);
             }
 
-            $filter = new ErebotTextFilter($this->_mainCfg);
-            $filter->addPattern(ErebotTextFilter::TYPE_STATIC,      $trigger, TRUE);
-            $filter->addPattern(ErebotTextFilter::TYPE_WILDCARD,    $trigger.' *', TRUE);
-            $this->_handlers['reload']   =   new ErebotEventHandler(
-                                                array($this, 'handleReload'),
-                                                'iErebotEventMessageText',
-                                                NULL, $filter);
+            $filter = new Erebot_TextFilter($this->_mainCfg);
+            $filter->addPattern(Erebot_TextFilter::TYPE_STATIC,      $trigger, TRUE);
+            $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' *', TRUE);
+            $this->_handlers['reload'] = new Erebot_EventHandler(
+                array($this, 'handleReload'),
+                'Erebot_Interface_Event_TextMessage',
+                NULL, $filter
+            );
             $this->_connection->addEventHandler($this->_handlers['reload']);
         }
     }
 
-    public function handlePart(iErebotEventMessageText $event)
+    public function handlePart(Erebot_Interface_Event_TextMessage $event)
     {
         $text       = $event->getText();
-        $chans      = ErebotUtils::gettok($text, 1, 1);
-        $message    = ErebotUtils::gettok($text, 2);
+        $chans      = Erebot_Utils::gettok($text, 1, 1);
+        $message    = Erebot_Utils::gettok($text, 2);
 
         if ($chans == '*')
             $targets    = '0';
@@ -128,74 +133,74 @@ extends ErebotModuleBase
             $targets    = $chans;
         else {
             $targets    = $event->getChan();
-            $message    = ErebotUtils::gettok($text, 1);
+            $message    = Erebot_Utils::gettok($text, 1);
         }
 
         $this->sendCommand('PART '.$targets.' :'.$message);
     }
 
-    public function handleQuit(iErebotEventMessageText $event)
+    public function handleQuit(Erebot_Interface_Event_TextMessage $event)
     {
         $text   = $event->getText();
-        $msg    = ErebotUtils::gettok($text, 1);
+        $msg    = Erebot_Utils::gettok($text, 1);
         if (rtrim($msg) == '')
             $msg = NULL;
-        $exitEvent = new ErebotEventExit($this->_connection);
+        $exitEvent = new Erebot_Event_Exit($this->_connection);
         $this->_connection->dispatchEvent($exitEvent);
         $this->_connection->disconnect($msg);
     }
 
-    public function handleVoice(iErebotEventMessageText $event)
+    public function handleVoice(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleDeVoice(iErebotEventMessageText $event)
+    public function handleDeVoice(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleHalfOp(iErebotEventMessageText $event)
+    public function handleHalfOp(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleDeHalfOp(iErebotEventMessageText $event)
+    public function handleDeHalfOp(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleOp(iErebotEventMessageText $event)
+    public function handleOp(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleDeOp(iErebotEventMessageText $event)
+    public function handleDeOp(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleProtect(iErebotEventMessageText $event)
+    public function handleProtect(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleDeProtect(iErebotEventMessageText $event)
+    public function handleDeProtect(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleOwner(iErebotEventMessageText $event)
+    public function handleOwner(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleDeOwner(iErebotEventMessageText $event)
+    public function handleDeOwner(Erebot_Interface_Event_TextMessage $event)
     {
         
     }
 
-    public function handleJoin(iErebotEventMessageText $event)
+    public function handleJoin(Erebot_Interface_Event_TextMessage $event)
     {
         $text   = $event->getText();
         $args   = ErebotUtils::gettok($text, 1);
@@ -203,9 +208,9 @@ extends ErebotModuleBase
         $this->sendCommand('JOIN '.$args);
     }
 
-    public function handleReload(iErebotEventMessageText &$event)
+    public function handleReload(Erebot_Interface_Event_TextMessage &$event)
     {
-        if ($event instanceof iErebotEventPrivate) {
+        if ($event instanceof Erebot_Interface_Event_Source) {
             $target = $event->getSource();
             $chan   = NULL;
         }
@@ -238,7 +243,7 @@ extends ErebotModuleBase
             $msg = $translator->gettext('The following files could not be '.
                 'reloaded: <for from="files" item="file"><var name="file"/>'.
                 '</for>');
-            $tpl = new ErebotStyling($msg, $translator);
+            $tpl = new Erebot_Styling($msg, $translator);
             $tpl->assign('files', $wrong);
             $this->sendMessage($target, $tpl->render());
             return;
