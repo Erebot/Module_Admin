@@ -20,7 +20,9 @@ class   Erebot_Module_Admin
 extends Erebot_Module_Base
 {
     static protected $_metadata = array(
-        'requires'  =>  array('Erebot_Module_TriggerRegistry'),
+        'requires'  =>  array(
+            'Erebot_Module_TriggerRegistry',
+        ),
     );
     protected $_handlers;
     protected $_triggers;
@@ -29,8 +31,7 @@ extends Erebot_Module_Base
     {
         if ($flags & self::RELOAD_HANDLERS) {
             $registry   = $this->_connection->getModule(
-                'Erebot_Module_TriggerRegistry',
-                Erebot_Connection::MODULE_BY_NAME
+                'Erebot_Module_TriggerRegistry'
             );
             $matchAny  = Erebot_Utils::getVStatic($registry, 'MATCH_ANY');
 
