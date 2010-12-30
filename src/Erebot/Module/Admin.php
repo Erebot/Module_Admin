@@ -71,14 +71,13 @@ extends Erebot_Module_Base
                     throw new Exception($tpl->render());
                 }
 
-                $filter = new Erebot_TextFilter($this->_mainCfg);
-                $filter->addPattern(Erebot_TextFilter::TYPE_STATIC,      $trigger, TRUE);
-                $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' *', TRUE);
                 $this->_handlers[$default] = new Erebot_EventHandler(
                     array($this, $handler),
-                    'Erebot_Interface_Event_TextMessage',
-                    NULL, $filter
+                    'Erebot_Interface_Event_TextMessage'
                 );
+                $this->_handlers[$default]
+                    ->addFilter(new Erebot_TextFilter_Static($trigger, TRUE))
+                    ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' *', TRUE));
                 $this->_connection->addEventHandler($this->_handlers[$default]);
             }
 
@@ -91,14 +90,13 @@ extends Erebot_Module_Base
                 throw new Exception($message);
             }
 
-            $filter = new Erebot_TextFilter($this->_mainCfg);
-            $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' &',      TRUE);
-            $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' & *',    TRUE);
             $this->_handlers['join'] = new Erebot_EventHandler(
                 array($this, 'handleJoin'),
-                'Erebot_Interface_Event_TextMessage',
-                NULL, $filter
+                'Erebot_Interface_Event_TextMessage'
             );
+            $this->_handlers['join']
+                ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' &', TRUE))
+                ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' & *', TRUE));
             $this->_connection->addEventHandler($this->_handlers['join']);
 
             // Reload
@@ -110,14 +108,14 @@ extends Erebot_Module_Base
                 throw new Exception($message);
             }
 
-            $filter = new Erebot_TextFilter($this->_mainCfg);
-            $filter->addPattern(Erebot_TextFilter::TYPE_STATIC,      $trigger, TRUE);
-            $filter->addPattern(Erebot_TextFilter::TYPE_WILDCARD,    $trigger.' *', TRUE);
             $this->_handlers['reload'] = new Erebot_EventHandler(
                 array($this, 'handleReload'),
                 'Erebot_Interface_Event_TextMessage',
                 NULL, $filter
             );
+            $this->_handlers['reload']
+                ->addFilter(new Erebot_TextFilter_Static($trigger, TRUE))
+                ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' *', TRUE));
             $this->_connection->addEventHandler($this->_handlers['reload']);
         }
     }
@@ -220,7 +218,7 @@ extends Erebot_Module_Base
 
         $translator = $this->getTranslator($chan);
         if (!function_exists('runkit_import')) {
-            $msg = $translator->gettext('The runkit extension is needed to perform hot-reload.');
+            $msg = $translator->gettext('The runkit extension is needed to perform hot reloads');
             $this->sendMessage($chan, $msg);
             return;
         }
