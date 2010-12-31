@@ -110,8 +110,7 @@ extends Erebot_Module_Base
 
             $this->_handlers['reload'] = new Erebot_EventHandler(
                 array($this, 'handleReload'),
-                'Erebot_Interface_Event_TextMessage',
-                NULL, $filter
+                'Erebot_Interface_Event_TextMessage'
             );
             $this->_handlers['reload']
                 ->addFilter(new Erebot_TextFilter_Static($trigger, TRUE))
