@@ -73,11 +73,14 @@ extends Erebot_Module_Base
 
                 $this->_handlers[$default] = new Erebot_EventHandler(
                     array($this, $handler),
-                    'Erebot_Interface_Event_TextMessage'
+                    new Erebot_Event_Match_All(
+                        new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_TextMessage'),
+                        new Erebot_Event_Match_Any(
+                            new Erebot_Event_Match_TextStatic($trigger, TRUE),
+                            new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
+                        )
+                    )
                 );
-                $this->_handlers[$default]
-                    ->addFilter(new Erebot_TextFilter_Static($trigger, TRUE))
-                    ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' *', TRUE));
                 $this->_connection->addEventHandler($this->_handlers[$default]);
             }
 
@@ -92,11 +95,14 @@ extends Erebot_Module_Base
 
             $this->_handlers['join'] = new Erebot_EventHandler(
                 array($this, 'handleJoin'),
-                'Erebot_Interface_Event_TextMessage'
+                new Erebot_Event_Match_All(
+                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_TextMessage'),
+                    new Erebot_Event_Match_Any(
+                        new Erebot_Event_Match_TextWildcard($trigger.' &', TRUE),
+                        new Erebot_Event_Match_TextWildcard($trigger.' & *'. TRUE)
+                    )
+                )
             );
-            $this->_handlers['join']
-                ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' &', TRUE))
-                ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' & *', TRUE));
             $this->_connection->addEventHandler($this->_handlers['join']);
 
             // Reload
@@ -110,11 +116,14 @@ extends Erebot_Module_Base
 
             $this->_handlers['reload'] = new Erebot_EventHandler(
                 array($this, 'handleReload'),
-                'Erebot_Interface_Event_TextMessage'
+                new Erebot_Event_Match_All(
+                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_TextMessage'),
+                    new Erebot_Event_Match_Any(
+                        new Erebot_Event_Match_TextStatic($trigger, TRUE),
+                        new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
+                    )
+                )
             );
-            $this->_handlers['reload']
-                ->addFilter(new Erebot_TextFilter_Static($trigger, TRUE))
-                ->addFilter(new Erebot_TextFilter_Wildcard($trigger.' *', TRUE));
             $this->_connection->addEventHandler($this->_handlers['reload']);
         }
     }
