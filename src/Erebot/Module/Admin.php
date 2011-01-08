@@ -131,16 +131,16 @@ extends Erebot_Module_Base
     public function handlePart(Erebot_Interface_Event_TextMessage $event)
     {
         $text       = $event->getText();
-        $chans      = Erebot_Utils::gettok($text, 1, 1);
-        $message    = Erebot_Utils::gettok($text, 2);
+        $chans      = $text->getTokens(1, 1);
+        $message    = $text->getTokens(2);
 
         if ($chans == '*')
             $targets    = '0';
-        else if (substr($chans, 0, 1) == '#')
+        else if ($this->_connection->isChannel(substr($chans, 0, 1)))
             $targets    = $chans;
         else {
             $targets    = $event->getChan();
-            $message    = Erebot_Utils::gettok($text, 1);
+            $message    = (string) $text;
         }
 
         $this->sendCommand('PART '.$targets.' :'.$message);
@@ -149,7 +149,7 @@ extends Erebot_Module_Base
     public function handleQuit(Erebot_Interface_Event_TextMessage $event)
     {
         $text   = $event->getText();
-        $msg    = Erebot_Utils::gettok($text, 1);
+        $msg    = $text->getTokens(1);
         if (rtrim($msg) == '')
             $msg = NULL;
         $exitEvent = new Erebot_Event_Exit($this->_connection);
@@ -210,7 +210,7 @@ extends Erebot_Module_Base
     public function handleJoin(Erebot_Interface_Event_TextMessage $event)
     {
         $text   = $event->getText();
-        $args   = ErebotUtils::gettok($text, 1);
+        $args   = $text->getTokens(1);
 
         $this->sendCommand('JOIN '.$args);
     }
