@@ -217,6 +217,11 @@ extends Erebot_Module_Base
 
     public function handleReload(Erebot_Interface_Event_TextMessage &$event)
     {
+        $this->_connection  = $connection;
+        $bot                = $connection->getBot();
+        $bot->reload();
+        return;
+
         if ($event instanceof Erebot_Interface_Event_Private) {
             $target = $event->getSource();
             $chan   = NULL;
