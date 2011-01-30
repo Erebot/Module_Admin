@@ -27,7 +27,7 @@ extends Erebot_Module_Base
     protected $_handlers;
     protected $_triggers;
 
-    public function reload($flags)
+    public function _reload($flags)
     {
         if ($flags & self::RELOAD_HANDLERS) {
             $registry   = $this->_connection->getModule(
@@ -128,6 +128,10 @@ extends Erebot_Module_Base
         }
     }
 
+    protected function _unload()
+    {
+    }
+
     public function handlePart(Erebot_Interface_Event_TextMessage $event)
     {
         $text       = $event->getText();
@@ -217,8 +221,7 @@ extends Erebot_Module_Base
 
     public function handleReload(Erebot_Interface_Event_TextMessage &$event)
     {
-        $this->_connection  = $connection;
-        $bot                = $connection->getBot();
+        $bot = $this->_connection->getBot();
         $bot->reload();
         return;
 
