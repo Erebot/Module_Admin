@@ -74,7 +74,7 @@ extends Erebot_Module_Base
                 $this->_handlers[$default] = new Erebot_EventHandler(
                     array($this, $handler),
                     new Erebot_Event_Match_All(
-                        new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_TextMessage'),
+                        new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
                         new Erebot_Event_Match_Any(
                             new Erebot_Event_Match_TextStatic($trigger, TRUE),
                             new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
@@ -88,15 +88,15 @@ extends Erebot_Module_Base
             $trigger = $this->parseString('trigger_join', 'join');
             $this->_triggers['join'] = $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['join'] === NULL) {
-                $message    = $this->_translator->gettext('Could not register trigger '.
-                                'for admin command "join"');
+                $message = $this->_translator->gettext(
+                    'Could not register trigger for admin command "join"');
                 throw new Exception($message);
             }
 
             $this->_handlers['join'] = new Erebot_EventHandler(
                 array($this, 'handleJoin'),
                 new Erebot_Event_Match_All(
-                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_TextMessage'),
+                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
                     new Erebot_Event_Match_Any(
                         new Erebot_Event_Match_TextWildcard($trigger.' &', TRUE),
                         new Erebot_Event_Match_TextWildcard($trigger.' & *'. TRUE)
@@ -117,7 +117,7 @@ extends Erebot_Module_Base
             $this->_handlers['reload'] = new Erebot_EventHandler(
                 array($this, 'handleReload'),
                 new Erebot_Event_Match_All(
-                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_TextMessage'),
+                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
                     new Erebot_Event_Match_Any(
                         new Erebot_Event_Match_TextStatic($trigger, TRUE),
                         new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
@@ -132,7 +132,7 @@ extends Erebot_Module_Base
     {
     }
 
-    public function handlePart(Erebot_Interface_Event_TextMessage $event)
+    public function handlePart(Erebot_Interface_Event_Base_TextMessage $event)
     {
         $text       = $event->getText();
         $chans      = $text->getTokens(1, 1);
@@ -150,68 +150,68 @@ extends Erebot_Module_Base
         $this->sendCommand('PART '.$targets.' :'.$message);
     }
 
-    public function handleQuit(Erebot_Interface_Event_TextMessage $event)
+    public function handleQuit(Erebot_Interface_Event_Base_TextMessage $event)
     {
         $text   = $event->getText();
         $msg    = $text->getTokens(1);
         if (rtrim($msg) == '')
             $msg = NULL;
-        $exitEvent = new Erebot_Event_Exit($this->_connection);
-        $this->_connection->dispatchEvent($exitEvent);
+
+        $this->_connection->dispatch($this->_connection->makeEvent('!Exit'));
         $this->_connection->disconnect($msg);
     }
 
-    public function handleVoice(Erebot_Interface_Event_TextMessage $event)
+    public function handleVoice(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleDeVoice(Erebot_Interface_Event_TextMessage $event)
+    public function handleDeVoice(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleHalfOp(Erebot_Interface_Event_TextMessage $event)
+    public function handleHalfOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleDeHalfOp(Erebot_Interface_Event_TextMessage $event)
+    public function handleDeHalfOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleOp(Erebot_Interface_Event_TextMessage $event)
+    public function handleOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleDeOp(Erebot_Interface_Event_TextMessage $event)
+    public function handleDeOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleProtect(Erebot_Interface_Event_TextMessage $event)
+    public function handleProtect(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleDeProtect(Erebot_Interface_Event_TextMessage $event)
+    public function handleDeProtect(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleOwner(Erebot_Interface_Event_TextMessage $event)
+    public function handleOwner(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleDeOwner(Erebot_Interface_Event_TextMessage $event)
+    public function handleDeOwner(Erebot_Interface_Event_Base_TextMessage $event)
     {
         
     }
 
-    public function handleJoin(Erebot_Interface_Event_TextMessage $event)
+    public function handleJoin(Erebot_Interface_Event_Base_TextMessage $event)
     {
         $text   = $event->getText();
         $args   = $text->getTokens(1);
@@ -219,13 +219,14 @@ extends Erebot_Module_Base
         $this->sendCommand('JOIN '.$args);
     }
 
-    public function handleReload(Erebot_Interface_Event_TextMessage &$event)
+    public function handleReload(Erebot_Interface_Event_Base_TextMessage &$event)
     {
-        $bot = $this->_connection->getBot();
-        $bot->reload();
         return;
+#        $bot = $this->_connection->getBot();
+#        $bot->reload();
+#        return;
 
-        if ($event instanceof Erebot_Interface_Event_Private) {
+        if ($event instanceof Erebot_Interface_Event_Base_Private) {
             $target = $event->getSource();
             $chan   = NULL;
         }
@@ -243,14 +244,57 @@ extends Erebot_Module_Base
         $wrong  = array();
         foreach ($files as $file) {
             if (substr($file, -4) == '.php') {
-                $ok	= runkit_import($file,
+                $parts = explode(DIRECTORY_SEPARATOR, substr($file, 0, -4));
+                while (count($parts)) {
+                    $class = implode('_', $parts);
+                    if (interface_exists($class, FALSE))
+                        continue 2;
+
+                    if (class_exists($class, FALSE)) {
+                        if ($parts[0] != 'Erebot')
+                            continue 2;
+                        break;
+                    }
+                    array_shift($parts);
+                }
+                if (!count($parts))
+                    continue;
+
+#                $reflector = new ReflectionClass($class);
+#                if ($reflector->isAbstract())
+#                    continue;
+
+#                $blacklist = array(
+#                    'Erebot_Module_AutoJoin',
+#                    'Erebot_Module_AZ',
+#                    'Erebot_Module_TriggerRegistry',
+#                    'Erebot_Event_Match_Any',
+#                    'Erebot_Event_Match_TextWildcard',
+#                    'Erebot_Module_Admin',
+#                    'Erebot_Event_Match_TextRegex',
+#                    'Erebot_Module_AutoConnect',
+#                    'Erebot_Module_Countdown',
+#                    'Erebot_Module_Helper',
+#                    'Erebot_Module_CtcpResponder',
+#                    'Erebot_Event_ChanText',
+#                    'Erebot_Module_IrcConnector',
+#                    'Erebot_Module_PingReply',
+#                );
+#                if (in_array($class, $blacklist))
+#                    continue;
+
+                echo "Reloading $file ($class)\n";
+                $ok = @runkit_import($file,
                     RUNKIT_IMPORT_FUNCTIONS |
                     RUNKIT_IMPORT_CLASSES   |
-                    RUNKIT_IMPORT_OVERRIDE
+                    0
+#                    RUNKIT_IMPORT_OVERRIDE
                 );
 
                 if (!$ok)
                     $wrong[] = $file;
+                else
+                    echo "Reloaded $file ($class)\n";
             }
         }
 
@@ -263,9 +307,8 @@ extends Erebot_Module_Base
             $this->sendMessage($target, $tpl->render());
             return;
         }
-        else
-            $msg = $translator->gettext('Successfully reloaded files.');
-            $this->sendMessage($target, $msg);
+        $msg = $translator->gettext('Successfully reloaded files.');
+        $this->sendMessage($target, $msg);
     }
 }
 
