@@ -1,6 +1,8 @@
+#
 msgid   ""
 msgstr  "Project-Id-Version: \n"
-        "POT-Creation-Date: \n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2011-04-13 20:38+0200\n"
         "PO-Revision-Date: \n"
         "Last-Translator: \n"
         "Language-Team: \n"
@@ -8,31 +10,25 @@ msgstr  "Project-Id-Version: \n"
         "Content-Type: text/plain; charset=utf-8\n"
         "Content-Transfer-Encoding: 8bit\n"
 #
+msgid        "reloading.errors"
+msgstr       "Les fichiers suivants n'ont pas pu être rechargés : <for from="
+     "\"files\" item=\"file\"><var name=\"file\"/></for>"
 #
-# File: Admin.php, line: 44
-msgid   "Could not register trigger for admin command \"<var name=\"command\"/>"
-        "\""
-msgstr  "Impossible d'enregistrer le déclencheur pour la commande "
-        "d'administration \"<var name=\"command\"/>\""
+msgid        "reloading.runkit"
+msgstr       "L'extension runkit est nécessaire pour recharger les fichiers "
+     "à chaud."
 #
+msgid        "reloading.success"
+msgstr       "Fichiers rechargés avec succès."
 #
-# File: Admin.php, line: 66
-msgid   "Could not register trigger for admin command \"join\""
-msgstr  "Impossible d'enregistrer le déclencheur pour la commande "
-        "d'administration \"join\""
+msgid        "trigger.error.command"
+msgstr       "Impossible d'enregistrer le déclencheur pour la commande "
+     "d'administration \"<var name=\"command\"/>\""
 #
+msgid        "trigger.error.join"
+msgstr       "Impossible d'enregistrer le déclencheur pour la commande "
+     "d'administration \"join\""
 #
-# File: Admin.php, line: 84
-msgid   "Could not register trigger for admin command \"reload\""
-msgstr  "Impossible d'enregistrer le déclencheur pour la commande "
-        "d'administration \"reload\""
-#
-msgid   "Successfully reloaded files."
-msgstr  ""
-#
-msgid   "The following files could not be reloaded: <for from=\"files\" item="
-        "\"file\"><var name=\"file\"/></for>"
-msgstr  ""
-#
-msgid   "The runkit extension is needed to perform hot-reload."
-msgstr  ""
+msgid        "trigger.error.reload"
+msgstr       "Impossible d'enregistrer le déclencheur pour la commande "
+     "d'administration \"reload\""

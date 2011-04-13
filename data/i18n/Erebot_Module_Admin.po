@@ -1,0 +1,48 @@
+# English translations for PACKAGE package.
+# This file is put in the public domain.
+# Automatically generated, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Erebot_Module_Admin 0.3.2\n"
+"Report-Msgid-Bugs-To: clicky@erebot.net\n"
+"POT-Creation-Date: 2011-04-13 20:13+0200\n"
+"PO-Revision-Date: 2011-04-13 20:13+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#
+# File: /var/www/Erebot/modules/Admin/trunk/src/Erebot/Module/Admin.php, line: 66
+msgid "Could not register trigger for admin command \"<var name=\"command\"/>\""
+msgstr "trigger.error.command"
+
+#
+# File: /var/www/Erebot/modules/Admin/trunk/src/Erebot/Module/Admin.php, line: 92
+msgid "Could not register trigger for admin command \"join\""
+msgstr "trigger.error.join"
+
+#
+# File: /var/www/Erebot/modules/Admin/trunk/src/Erebot/Module/Admin.php, line: 112
+msgid "Could not register trigger for admin command \"reload\""
+msgstr "trigger.error.reload"
+
+#
+# File: /var/www/Erebot/modules/Admin/trunk/src/Erebot/Module/Admin.php, line: 310
+msgid "Successfully reloaded files."
+msgstr "reloading.success"
+
+#
+# File: /var/www/Erebot/modules/Admin/trunk/src/Erebot/Module/Admin.php, line: 302
+msgid ""
+"The following files could not be reloaded: <for from=\"files\" item=\"file"
+"\"><var name=\"file\"/></for>"
+msgstr "reloading.errors"
+
+#
+# File: /var/www/Erebot/modules/Admin/trunk/src/Erebot/Module/Admin.php, line: 238
+msgid "The runkit extension is needed to perform hot reloads"
+msgstr "reloading.runkit"
