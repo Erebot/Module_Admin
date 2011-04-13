@@ -1,31 +1,31 @@
 #
+msgid   "trigger.error.reload"
+msgstr  "Could not register trigger for admin command \"reload\""
+#
+msgid   "trigger.error.join"
+msgstr  "Could not register trigger for admin command \"join\""
+#
+msgid   "trigger.error.command"
+msgstr  "Could not register trigger for admin command \"<var name=\"command\"/>"
+        "\""
+#
+msgid   "reloading.success"
+msgstr  "Successfully reloaded files."
+#
+msgid   "reloading.runkit"
+msgstr  "The runkit extension is needed to perform hot-reload."
+#
+msgid   "reloading.errors"
+msgstr  "The following files could not be reloaded: <for from=\"files\" item="
+        "\"file\"><var name=\"file\"/></for>"
+#
 msgid   ""
 msgstr  "Project-Id-Version: \n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2011-04-13 20:38+0200\n"
+        "POT-Creation-Date: 2011-04-14 01:13+0200\n"
         "PO-Revision-Date: \n"
         "Last-Translator: \n"
         "Language-Team: \n"
         "MIME-Version: 1.0\n"
         "Content-Type: text/plain; charset=utf-8\n"
         "Content-Transfer-Encoding: 8bit\n"
-#
-msgid        "reloading.errors"
-msgstr       "The following files could not be reloaded: <for from=\"files"
-     "\" item=\"file\"><var name=\"file\"/></for>"
-#
-msgid        "reloading.runkit"
-msgstr       "The runkit extension is needed to perform hot-reload."
-#
-msgid        "reloading.success"
-msgstr       "Successfully reloaded files."
-#
-msgid        "trigger.error.command"
-msgstr       "Could not register trigger for admin command \"<var name="
-     "\"command\"/>\""
-#
-msgid        "trigger.error.join"
-msgstr       "Could not register trigger for admin command \"join\""
-#
-msgid        "trigger.error.reload"
-msgstr       "Could not register trigger for admin command \"reload\""
