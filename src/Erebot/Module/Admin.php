@@ -166,11 +166,11 @@ extends Erebot_Module_Base
 
         if ($chans == '*')
             $targets    = '0';
-        else if ($this->_connection->isChannel(substr($chans, 0, 1)))
+        else if ($this->_connection->isChannel((string) substr($chans, 0, 1)))
             $targets    = $chans;
         else {
             $targets    = $event->getChan();
-            $message    = (string) $text;
+            $message    = $text->getTokens(1);
         }
 
         $this->sendCommand('PART '.$targets.' :'.$message);
