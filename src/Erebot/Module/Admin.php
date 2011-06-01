@@ -125,6 +125,19 @@ extends Erebot_Module_Base
                 )
             );
             $this->_connection->addEventHandler($this->_handlers['reload']);
+            $this->_admins = array();
+            $admins = array_filter(
+                explode(
+                    ' ',
+                    str_replace(',', ' ',
+                        trim($this->parseString('admins', ''))
+                    )
+                )
+            );
+            foreach ($admins as $admin) {
+                $identity           = new Erebot_Identity($admin);
+                $this->_admins[]    = $identity->getMask();
+            }
         }
     }
 
@@ -132,8 +145,21 @@ extends Erebot_Module_Base
     {
     }
 
+    protected function isAdmin($identity)
+    {
+        if (!count($this->_admins))
+            return TRUE;
+
+        foreach ($this->_admins as $admin)
+            if ($identity->match($admin))
+                return TRUE;
+        return FALSE;
+    }
+
     public function handlePart(Erebot_Interface_Event_Base_TextMessage $event)
     {
+        if (!$this->isAdmin($event->getSource()))
+            return;
         $text       = $event->getText();
         $chans      = $text->getTokens(1, 1);
         $message    = $text->getTokens(2);
@@ -152,6 +178,8 @@ extends Erebot_Module_Base
 
     public function handleQuit(Erebot_Interface_Event_Base_TextMessage $event)
     {
+        if (!$this->isAdmin($event->getSource()))
+            return;
         $text   = $event->getText();
         $msg    = $text->getTokens(1);
         if (rtrim($msg) == '')
@@ -163,56 +191,68 @@ extends Erebot_Module_Base
 
     public function handleVoice(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleDeVoice(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleHalfOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleDeHalfOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleDeOp(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleProtect(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleDeProtect(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleOwner(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleDeOwner(Erebot_Interface_Event_Base_TextMessage $event)
     {
-        
+        if (!$this->isAdmin($event->getSource()))
+            return;
     }
 
     public function handleJoin(Erebot_Interface_Event_Base_TextMessage $event)
     {
+        if (!$this->isAdmin($event->getSource()))
+            return;
         $text   = $event->getText();
         $args   = $text->getTokens(1);
 
@@ -221,10 +261,12 @@ extends Erebot_Module_Base
 
     public function handleReload(Erebot_Interface_Event_Base_TextMessage &$event)
     {
+        if (!$this->isAdmin($event->getSource()))
+            return;
+
+        $bot = $this->_connection->getBot();
+        $bot->reload();
         return;
-#        $bot = $this->_connection->getBot();
-#        $bot->reload();
-#        return;
 
         if ($event instanceof Erebot_Interface_Event_Base_Private) {
             $target = $event->getSource();
