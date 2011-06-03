@@ -1,0 +1,31 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Erebot_Module_Admin 0.3.2\n"
+"Report-Msgid-Bugs-To: clicky@erebot.net\n"
+"POT-Creation-Date: 2011-04-13 20:13+0200\n"
+"PO-Revision-Date: 2011-04-13 20:13+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Could not register trigger for admin command \"<var name=\"command\"/>\""
+msgstr ""
+
+msgid "Could not register trigger for admin command \"join\""
+msgstr ""
+
+msgid "Could not register trigger for admin command \"reload\""
+msgstr ""
+
+msgid "Successfully reloaded files."
+msgstr ""
+
+msgid "The following files could not be reloaded: <for from=\"files\" item=\"file\"><var name=\"file\"/></for>"
+msgstr ""
+
+msgid "The runkit extension is needed to perform hot reloads"
+msgstr ""
+
