@@ -67,7 +67,7 @@ extends Erebot_Module_Base
                 }
 
                 $this->_handlers[$default] = new Erebot_EventHandler(
-                    array($this, $handler),
+                    new Erebot_Callable(array($this, $handler)),
                     new Erebot_Event_Match_All(
                         new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
                         new Erebot_Event_Match_Any(
@@ -89,7 +89,7 @@ extends Erebot_Module_Base
             }
 
             $this->_handlers['join'] = new Erebot_EventHandler(
-                array($this, 'handleJoin'),
+                new Erebot_Callable(array($this, 'handleJoin')),
                 new Erebot_Event_Match_All(
                     new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
                     new Erebot_Event_Match_Any(
@@ -110,7 +110,7 @@ extends Erebot_Module_Base
             }
 
             $this->_handlers['reload'] = new Erebot_EventHandler(
-                array($this, 'handleReload'),
+                new Erebot_Callable(array($this, 'handleReload')),
                 new Erebot_Event_Match_All(
                     new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
                     new Erebot_Event_Match_Any(
