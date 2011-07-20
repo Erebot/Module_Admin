@@ -151,7 +151,10 @@ extends Erebot_Module_Base
         return FALSE;
     }
 
-    public function handlePart(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handlePart(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
@@ -171,7 +174,10 @@ extends Erebot_Module_Base
         $this->sendCommand('PART '.$targets.' :'.$message);
     }
 
-    public function handleQuit(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleQuit(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
@@ -184,67 +190,100 @@ extends Erebot_Module_Base
         $this->_connection->disconnect($msg);
     }
 
-    public function handleVoice(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleVoice(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleDeVoice(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleDeVoice(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleHalfOp(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleHalfOp(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleDeHalfOp(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleDeHalfOp(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleOp(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleOp(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleDeOp(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleDeOp(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleProtect(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleProtect(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleDeProtect(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleDeProtect(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleOwner(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleOwner(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleDeOwner(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleDeOwner(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
     }
 
-    public function handleJoin(Erebot_Interface_Event_Base_TextMessage $event)
+    public function handleJoin(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
@@ -254,7 +293,10 @@ extends Erebot_Module_Base
         $this->sendCommand('JOIN '.$args);
     }
 
-    public function handleReload(Erebot_Interface_Event_Base_TextMessage &$event)
+    public function handleReload(
+        Erebot_Interface_EventHandler           $handler,
+        Erebot_Interface_Event_Base_TextMessage $event
+    )
     {
         if (!$this->isAdmin($event->getSource()))
             return;
