@@ -61,7 +61,7 @@ extends Erebot_Module_Base
                     $message    = $this->gettext('Could not register trigger '.
                                     'for admin command "<var name="command"'.
                                     '/>"');
-                    $tpl        = Erebot_Styling($message, $this->_translator);
+                    $tpl        = Erebot_Styling($message, $this->getTranslator(FALSE));
                     $tpl->assign('command', $default);
                     throw new Exception($tpl->render());
                 }
@@ -83,7 +83,8 @@ extends Erebot_Module_Base
             $trigger = $this->parseString('trigger_join', 'join');
             $this->_triggers['join'] = $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['join'] === NULL) {
-                $message = $this->_translator->gettext(
+                $translator = $this->getTranslator(FALSE);
+                $message = $translator->gettext(
                     'Could not register trigger for admin command "join"');
                 throw new Exception($message);
             }
@@ -104,7 +105,8 @@ extends Erebot_Module_Base
             $trigger = $this->parseString('trigger_reload', 'reload');
             $this->_triggers['reload'] = $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['reload'] === NULL) {
-                $message    = $this->_translator->gettext('Could not register trigger '.
+                $translator = $this->getTranslator(FALSE);
+                $message    = $translator->gettext('Could not register trigger '.
                                 'for admin command "reload"');
                 throw new Exception($message);
             }
