@@ -32,7 +32,9 @@ extends Erebot_Module_Base
 
             if (!($flags & self::RELOAD_INIT)) {
                 foreach ($this->_triggers as $name => $value) {
-                    $this->_connection->removeEventHandler($this->_handlers[$name]);
+                    $this->_connection->removeEventHandler(
+                        $this->_handlers[$name]
+                    );
                     $registry->freeTriggers($value, $matchAny);
                 }
             }
@@ -56,12 +58,14 @@ extends Erebot_Module_Base
 
             foreach ($triggers as $default => $handler) {
                 $trigger = $this->parseString('trigger_'.$default, $default);
-                $this->_triggers[$default] = $registry->registerTriggers($trigger, $matchAny);
+                $this->_triggers[$default] =
+                    $registry->registerTriggers($trigger, $matchAny);
                 if ($this->_triggers[$default] === NULL) {
-                    $message    = $this->gettext('Could not register trigger '.
-                                    'for admin command "<var name="command"'.
-                                    '/>"');
-                    $tpl        = Erebot_Styling($message, $this->getTranslator(FALSE));
+                    $msg = $this->gettext(
+                        'Could not register trigger for admin command '.
+                        '"<var name="command"/>"'
+                    );
+                    $tpl = Erebot_Styling($msg, $this->getTranslator(FALSE));
                     $tpl->assign('command', $default);
                     throw new Exception($tpl->render());
                 }
@@ -69,10 +73,15 @@ extends Erebot_Module_Base
                 $this->_handlers[$default] = new Erebot_EventHandler(
                     new Erebot_Callable(array($this, $handler)),
                     new Erebot_Event_Match_All(
-                        new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
+                        new Erebot_Event_Match_InstanceOf(
+                            'Erebot_Interface_Event_Base_TextMessage'
+                        ),
                         new Erebot_Event_Match_Any(
                             new Erebot_Event_Match_TextStatic($trigger, TRUE),
-                            new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
+                            new Erebot_Event_Match_TextWildcard(
+                                $trigger.' *',
+                                TRUE
+                            )
                         )
                     )
                 );
@@ -81,21 +90,31 @@ extends Erebot_Module_Base
 
             // Join
             $trigger = $this->parseString('trigger_join', 'join');
-            $this->_triggers['join'] = $registry->registerTriggers($trigger, $matchAny);
+            $this->_triggers['join'] =
+                $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['join'] === NULL) {
                 $translator = $this->getTranslator(FALSE);
-                $message = $translator->gettext(
-                    'Could not register trigger for admin command "join"');
-                throw new Exception($message);
+                $msg = $translator->gettext(
+                    'Could not register trigger for admin command "join"'
+                );
+                throw new Exception($msg);
             }
 
             $this->_handlers['join'] = new Erebot_EventHandler(
                 new Erebot_Callable(array($this, 'handleJoin')),
                 new Erebot_Event_Match_All(
-                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
+                    new Erebot_Event_Match_InstanceOf(
+                        'Erebot_Interface_Event_Base_TextMessage'
+                    ),
                     new Erebot_Event_Match_Any(
-                        new Erebot_Event_Match_TextWildcard($trigger.' &', TRUE),
-                        new Erebot_Event_Match_TextWildcard($trigger.' & *'. TRUE)
+                        new Erebot_Event_Match_TextWildcard(
+                            $trigger.' &',
+                            TRUE
+                        ),
+                        new Erebot_Event_Match_TextWildcard(
+                            $trigger.' & *'.
+                            TRUE
+                        )
                     )
                 )
             );
@@ -103,18 +122,23 @@ extends Erebot_Module_Base
 
             // Reload
             $trigger = $this->parseString('trigger_reload', 'reload');
-            $this->_triggers['reload'] = $registry->registerTriggers($trigger, $matchAny);
+            $this->_triggers['reload'] =
+                $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['reload'] === NULL) {
                 $translator = $this->getTranslator(FALSE);
-                $message    = $translator->gettext('Could not register trigger '.
-                                'for admin command "reload"');
-                throw new Exception($message);
+                $msg = $translator->gettext(
+                    'Could not register trigger '.
+                    'for admin command "reload"'
+                );
+                throw new Exception($msg);
             }
 
             $this->_handlers['reload'] = new Erebot_EventHandler(
                 new Erebot_Callable(array($this, 'handleReload')),
                 new Erebot_Event_Match_All(
-                    new Erebot_Event_Match_InstanceOf('Erebot_Interface_Event_Base_TextMessage'),
+                    new Erebot_Event_Match_InstanceOf(
+                        'Erebot_Interface_Event_Base_TextMessage'
+                    ),
                     new Erebot_Event_Match_Any(
                         new Erebot_Event_Match_TextStatic($trigger, TRUE),
                         new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
@@ -126,7 +150,8 @@ extends Erebot_Module_Base
             $admins = array_filter(
                 explode(
                     ' ',
-                    str_replace(',', ' ',
+                    str_replace(
+                        ',', ' ',
                         trim($this->parseString('admins', ''))
                     )
                 )
@@ -316,7 +341,9 @@ extends Erebot_Module_Base
 
         $translator = $this->getTranslator($chan);
         if (!function_exists('runkit_import')) {
-            $msg = $translator->gettext('The runkit extension is needed to perform hot reloads');
+            $msg = $translator->gettext(
+                'The runkit extension is needed to perform hot reloads'
+            );
             $this->sendMessage($chan, $msg);
             return;
         }
@@ -365,11 +392,10 @@ extends Erebot_Module_Base
 #                    continue;
 
                 echo "Reloading $file ($class)\n";
-                $ok = @runkit_import($file,
+                $ok = @runkit_import(
+                    $file,
                     RUNKIT_IMPORT_FUNCTIONS |
-                    RUNKIT_IMPORT_CLASSES   |
-                    0
-#                    RUNKIT_IMPORT_OVERRIDE
+                    RUNKIT_IMPORT_CLASSES
                 );
 
                 if (!$ok)
@@ -380,9 +406,10 @@ extends Erebot_Module_Base
         }
 
         if (count($wrong)) {
-            $msg = $translator->gettext('The following files could not be '.
-                'reloaded: <for from="files" item="file"><var name="file"/>'.
-                '</for>');
+            $msg = $translator->gettext(
+                'The following files could not be reloaded: '.
+                '<for from="files" item="file"><var name="file"/></for>'
+            );
             $tpl = new Erebot_Styling($msg, $translator);
             $tpl->assign('files', $wrong);
             $this->sendMessage($target, $tpl->render());
