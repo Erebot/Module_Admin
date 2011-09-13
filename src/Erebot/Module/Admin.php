@@ -61,7 +61,8 @@ extends Erebot_Module_Base
                 $this->_triggers[$default] =
                     $registry->registerTriggers($trigger, $matchAny);
                 if ($this->_triggers[$default] === NULL) {
-                    $msg = $this->gettext(
+                    $translator = $this->getTranslator(FALSE);
+                    $msg = $translator->gettext(
                         'Could not register trigger for admin command '.
                         '"<var name="command"/>"'
                     );
