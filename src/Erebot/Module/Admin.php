@@ -170,9 +170,6 @@ extends Erebot_Module_Base
 
     protected function isAdmin($identity)
     {
-        if (!count($this->_admins))
-            return TRUE;
-
         foreach ($this->_admins as $admin)
             if ($identity->match($admin))
                 return TRUE;
