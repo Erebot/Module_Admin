@@ -75,7 +75,7 @@ extends Erebot_Module_Base
                     new Erebot_Callable(array($this, $handler)),
                     new Erebot_Event_Match_All(
                         new Erebot_Event_Match_InstanceOf(
-                            'Erebot_Interface_Event_Base_TextMessage'
+                            'Erebot_Interface_Event_ChanText'
                         ),
                         new Erebot_Event_Match_Any(
                             new Erebot_Event_Match_TextStatic($trigger, TRUE),
@@ -221,124 +221,157 @@ extends Erebot_Module_Base
         $this->_connection->disconnect($msg);
     }
 
+    protected function _setMode(
+        Erebot_Interface_Event_Base_TextMessage $event,
+                                                $mode
+    )
+    {
+        $source = $event->getSource();
+        if (!$this->isAdmin($source))
+            return;
+
+        try {
+            $capabilities = $this->_connection->getModule(
+                'Erebot_Module_ServerCapabilities',
+                NULL, FALSE
+            );
+            try {
+                if (!$capabilities->isChannelPrivilege(substr($mode, 1)))
+                    return;
+            }
+            catch (Erebot_InvalidValueException $e) {
+                // This should never happen, but still...
+                return FALSE;
+            }
+        }
+        catch (Erebot_NotFoundException $e) {
+            // By default, we're strict about what modes
+            // can be changed to follow RFC 1459.
+            if (!in_array(substr($mode, 1), array('o', 'v')))
+                return;
+        }
+
+        $text       = $event->getText();
+        $nbNicks    = count($text) - 1;
+        $prefix     = 'MODE '.$event->getChan().' '.$mode.' :';
+
+        if (!$nbNicks) {
+            $this->sendCommand($prefix.$source->getNick());
+            return;
+        }
+
+        for ($i = 1; $i <= $nbNicks; $i++)
+            $this->sendCommand($prefix.$text[$i]);
+    }
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleVoice(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '+v');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeVoice(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '-v');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleHalfOp(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '+h');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeHalfOp(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '-h');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleOp(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '+o');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeOp(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '-o');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleProtect(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '+a');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeProtect(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '-a');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleOwner(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '+q');
     }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeOwner(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
+        Erebot_Interface_EventHandler   $handler,
+        Erebot_Interface_Event_ChanText $event
     )
     {
-        if (!$this->isAdmin($event->getSource()))
-            return;
+        $this->_setMode($event, '-q');
     }
 
     /**
