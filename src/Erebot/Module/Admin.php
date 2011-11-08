@@ -217,8 +217,10 @@ extends Erebot_Module_Base
         if (rtrim($msg) == '')
             $msg = NULL;
 
-        $this->_connection->dispatch($this->_connection->makeEvent('!Exit'));
-        $this->_connection->disconnect($msg);
+        $disconnection = $this->_connection->makeEvent('!Disconnect');
+        $this->_connection->dispatch($disconnection);
+        if (!$disconnection->preventDefault())
+            $this->_connection->disconnect($msg);
     }
 
     protected function _setMode(
