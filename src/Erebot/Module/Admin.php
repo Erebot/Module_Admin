@@ -56,19 +56,18 @@ extends Erebot_Module_Base
                             'deowner'   => 'handleDeOwner',
                         );
 
+            $fmt = $this->getFormatter(FALSE);
             foreach ($triggers as $default => $handler) {
                 $trigger = $this->parseString('trigger_'.$default, $default);
                 $this->_triggers[$default] =
                     $registry->registerTriggers($trigger, $matchAny);
                 if ($this->_triggers[$default] === NULL) {
-                    $translator = $this->getTranslator(FALSE);
-                    $msg = $translator->gettext(
+                    $msg = $fmt->_(
                         'Could not register trigger for admin command '.
-                        '"<var name="command"/>"'
+                        '"<var name="command"/>"',
+                        array('command' => $default)
                     );
-                    $tpl = Erebot_Styling($msg, $this->getTranslator(FALSE));
-                    $tpl->assign('command', $default);
-                    throw new Exception($tpl->render());
+                    throw new Exception($msg);
                 }
 
                 $this->_handlers[$default] = new Erebot_EventHandler(
@@ -94,8 +93,7 @@ extends Erebot_Module_Base
             $this->_triggers['join'] =
                 $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['join'] === NULL) {
-                $translator = $this->getTranslator(FALSE);
-                $msg = $translator->gettext(
+                $msg = $fmt->_(
                     'Could not register trigger for admin command "join"'
                 );
                 throw new Exception($msg);
@@ -126,8 +124,7 @@ extends Erebot_Module_Base
             $this->_triggers['reload'] =
                 $registry->registerTriggers($trigger, $matchAny);
             if ($this->_triggers['reload'] === NULL) {
-                $translator = $this->getTranslator(FALSE);
-                $msg = $translator->gettext(
+                $msg = $fmt->_(
                     'Could not register trigger '.
                     'for admin command "reload"'
                 );
@@ -414,9 +411,9 @@ extends Erebot_Module_Base
         else
             $target = $chan = $event->getChan();
 
-        $translator = $this->getTranslator($chan);
+        $fmt = $this->getFormatter($chan);
         if (!function_exists('runkit_import')) {
-            $msg = $translator->gettext(
+            $msg = $fmt->_(
                 'The runkit extension is needed to perform hot reloads'
             );
             $this->sendMessage($chan, $msg);
@@ -481,16 +478,15 @@ extends Erebot_Module_Base
         }
 
         if (count($wrong)) {
-            $msg = $translator->gettext(
+            $msg = $fmt->_(
                 'The following files could not be reloaded: '.
-                '<for from="files" item="file"><var name="file"/></for>'
+                '<for from="files" item="file"><var name="file"/></for>',
+                array('files' => $wrong)
             );
-            $tpl = new Erebot_Styling($msg, $translator);
-            $tpl->assign('files', $wrong);
-            $this->sendMessage($target, $tpl->render());
+            $this->sendMessage($target, $msg);
             return;
         }
-        $msg = $translator->gettext('Successfully reloaded files.');
+        $msg = $fmt->_('Successfully reloaded files.');
         $this->sendMessage($target, $msg);
     }
 }
