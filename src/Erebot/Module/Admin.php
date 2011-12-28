@@ -147,8 +147,7 @@ extends Erebot_Module_Base
                 )
             );
             $this->_connection->addEventHandler($this->_handlers['reload']);
-            $this->_admins = array();
-            $admins = array_filter(
+            $this->_admins = array_filter(
                 explode(
                     ' ',
                     str_replace(
@@ -157,10 +156,6 @@ extends Erebot_Module_Base
                     )
                 )
             );
-            foreach ($admins as $admin) {
-                $identity           = new Erebot_Identity($admin);
-                $this->_admins[]    = $identity->getMask();
-            }
         }
     }
 
