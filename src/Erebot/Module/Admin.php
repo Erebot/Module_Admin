@@ -16,12 +16,33 @@
     along with Erebot.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \brief
+ *      A module that provides several commands
+ *      intended for administrators.
+ */
 class   Erebot_Module_Admin
 extends Erebot_Module_Base
 {
+    /// A list of handlers registered by this module.
     protected $_handlers;
+
+    /// A list of triggers registered by this module.
     protected $_triggers;
 
+
+    /**
+     * This method is called whenever the module is (re)loaded.
+     *
+     * \param int $flags
+     *      A bitwise OR of the Erebot_Module_Base::RELOAD_*
+     *      constants. Your method should take proper actions
+     *      depending on the value of those flags.
+     *
+     * \note
+     *      See the documentation on individual RELOAD_*
+     *      constants for a list of possible values.
+     */
     public function _reload($flags)
     {
         if ($flags & self::RELOAD_HANDLERS) {
@@ -156,11 +177,18 @@ extends Erebot_Module_Base
         }
     }
 
-    protected function _unload()
-    {
-    }
-
-    protected function isAdmin($identity)
+    /**
+     * Tests whether the given identity refers
+     * to an administrator or not.
+     *
+     * \param Erebot_Identity $identity
+     *      Identity to test.
+     *
+     * \retval bool
+     *      TRUE if the given identity refers to
+     *      an administrator, FALSE otherwise.
+     */
+    protected function isAdmin(Erebot_Identity $identity)
     {
         foreach ($this->_admins as $admin)
             if ($identity->match($admin))
@@ -169,6 +197,22 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to make the bot
+     * leave an IRC channel.
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to make the bot leave an IRC channel.
+     *      The request may contain the name of the IRC
+     *      channel to leave or "*" to make it leave all
+     *      channels the bot is currently on.
+     *      If missing, the current channel will be left.
+     *      You may also pass some message that will be
+     *      displayed to other users when leaving the
+     *      channel.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handlePart(
@@ -195,6 +239,18 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to make the bot
+     * disconnect from the current server.
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to make the bot disconnect from the
+     *      current IRC server.
+     *      You may pass a message that will be used as the
+     *      quit message.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleQuit(
@@ -215,6 +271,18 @@ extends Erebot_Module_Base
             $this->_connection->disconnect($msg);
     }
 
+    /**
+     * Adds or removes a channel status for some user
+     * on some IRC channel.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      The original request to add or remove a channel
+     *      status from some user.
+     *
+     * \param string $mode
+     *      A string describing the type of change to apply.
+     *      ie. something like "+v" (voice) or "-o" (deop).
+     */
     protected function _setMode(
         Erebot_Interface_Event_Base_TextMessage $event,
                                                 $mode
@@ -259,6 +327,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to give someone
+     * the voice status (+v).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to give someone the voice status.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleVoice(
@@ -270,6 +347,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to take the voice
+     * status from someone (-v).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to remove the voice status from someone.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeVoice(
@@ -281,6 +367,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to give someone
+     * the half-operator status (+h).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to give someone the half-operator status.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleHalfOp(
@@ -292,6 +387,16 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to take the half-operator
+     * status from someone (-h).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to remove the half-operator status
+     *      from someone.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeHalfOp(
@@ -303,6 +408,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to give someone
+     * the operator status (+o).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to give someone the operator status.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleOp(
@@ -314,6 +428,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to take the operator
+     * status from someone (-o).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to remove the operator status from someone.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeOp(
@@ -325,6 +448,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to give someone
+     * the protected status (+a).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to give someone the protected status.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleProtect(
@@ -336,6 +468,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to take the protected
+     * status from someone (-a).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to remove the protected status from someone.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeProtect(
@@ -347,6 +488,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to give someone
+     * the owner status (+q).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to give someone the owner status.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleOwner(
@@ -358,6 +508,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to take the owner
+     * status from someone (-q).
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to remove the owner status from someone.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeOwner(
@@ -369,6 +528,15 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to join some IRC channel.
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to join the IRC channel with the given
+     *      name (passed as an additional parameter).
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleJoin(
@@ -385,6 +553,14 @@ extends Erebot_Module_Base
     }
 
     /**
+     * Handles a request to reload the bot's modules.
+     *
+     * \param Erebot_Interface_EventHandler $handler
+     *      Handler that triggered this event.
+     *
+     * \param Erebot_Interface_Event_Base_TextMessage $event
+     *      Request to reload all modules used by the bot.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleReload(
