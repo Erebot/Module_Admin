@@ -546,9 +546,9 @@ extends Erebot_Module_Base
     {
         if (!$this->isAdmin($event->getSource()))
             return;
+
         $text   = $event->getText();
         $args   = $text->getTokens(1);
-
         $this->sendCommand('JOIN '.$args);
     }
 
