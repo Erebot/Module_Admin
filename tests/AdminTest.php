@@ -111,11 +111,6 @@ extends Erebot_Testenv_Module_TestCase
         parent::tearDown();
     }
 
-    public function isChannel($chan)
-    {
-        return !strncasecmp($chan, '#', 1);
-    }
-
     public function disconnect($msg)
     {
         $this->_outputBuffer[] = 'QUIT :'.$msg;
@@ -170,11 +165,6 @@ extends Erebot_Testenv_Module_TestCase
 
     public function testPart()
     {
-        $this->_connection
-            ->expects($this->any())
-            ->method('isChannel')
-            ->will($this->returnCallback(array($this, 'isChannel')));
-
         $callback = array($this->_module, 'handlePart');
 
         $this->_triggerTest($callback, '!part', "PART #test :");
