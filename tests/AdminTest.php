@@ -30,7 +30,7 @@ class Erebot_Identity
         return $this->_identity;
     }
 
-    public function match($admin)
+    public function match($admin, Erebot_Interface_IrcCollator $collator)
     {
         return ($admin == $this->_identity);
     }

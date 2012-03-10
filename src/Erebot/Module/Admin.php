@@ -190,8 +190,9 @@ extends Erebot_Module_Base
      */
     protected function isAdmin(Erebot_Identity $identity)
     {
+        $collator = $this->_connection->getCollator();
         foreach ($this->_admins as $admin)
-            if ($identity->match($admin))
+            if ($identity->match($admin, $collator))
                 return TRUE;
         return FALSE;
     }
