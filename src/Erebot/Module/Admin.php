@@ -266,7 +266,8 @@ extends Erebot_Module_Base
         if (rtrim($msg) == '')
             $msg = NULL;
 
-        $disconnection = $this->_connection->makeEvent('!Disconnect');
+        $eventsProducer = $this->_connection->getEventsProducer();
+        $disconnection = $eventsProducer->makeEvent('!Disconnect');
         $this->_connection->dispatch($disconnection);
         if (!$disconnection->preventDefault())
             $this->_connection->disconnect($msg);
