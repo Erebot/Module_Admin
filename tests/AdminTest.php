@@ -91,10 +91,35 @@ extends Erebot_Testenv_Module_TestCase
             Erebot_Module_Base::RELOAD_MEMBERS
         );
 
+        $this->_disconnect = $this->getMock(
+            'Erebot_Interface_Event_Disconnect',
+            array(), array(), '', FALSE, FALSE
+        );
+
+        $this->_eventsProducer = $this->getMock(
+            'Erebot_Interface_IrcParser',
+            array(), array(), '', FALSE, FALSE
+        );
+
+        $this->_eventsProducer
+            ->expects($this->any())
+            ->method('makeEvent')
+            ->will($this->returnValue($this->_disconnect));
+
         $this->_connection
             ->expects($this->any())
             ->method('getModule')
             ->will($this->throwException(new Erebot_NotFoundException()));
+
+        $this->_connection
+            ->expects($this->any())
+            ->method('getModule')
+            ->will($this->throwException(new Erebot_NotFoundException()));
+
+        $this->_connection
+            ->expects($this->any())
+            ->method('getEventsProducer')
+            ->will($this->returnValue($this->_eventsProducer));
 
         $this->_textMock = $this->getMockForAbstractClass(
             'TextWrapper',
