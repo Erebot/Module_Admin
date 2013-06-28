@@ -1,14 +1,13 @@
+/vendor
+
 /data/i18n/*/LC_MESSAGES/*.mo
 
 /docs/api
 /docs/enduser
 /docs/coverage
+/docs/src/generic
 
 /*.pem
 /*.phar
 /*.pubkey
-/*.tgz
 /*.tagfile.xml
-
-/package.xml
-/package_compatible.xml
