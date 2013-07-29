@@ -16,7 +16,6 @@ origin = Popen([git, 'config', '--local', 'remote.origin.url'],
 project = origin.rpartition('/')[2]
 if project.endswith('.git'):
     project = project[:-4]
-os.environ['SPHINX_PROJECT'] = project
 
 for repository, path in (
     ('git://github.com/Erebot/Erebot_Buildenv.git', buildenv),
