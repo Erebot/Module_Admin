@@ -7,6 +7,7 @@ git = Popen('which git 2> %s' % os.devnull, shell=True, stdout=PIPE
             ).stdout.read().strip()
 cwd = os.getcwd()
 root = os.path.abspath(os.path.join(cwd, '..', '..'))
+print "Running from %s..." % (root, )
 
 buildenv = os.path.join(root, 'vendor', 'erebot', 'buildenv')
 generic_doc = os.path.join(root, 'docs', 'src', 'generic')
@@ -23,11 +24,15 @@ for repository, path in (
 ):
     if not os.path.isdir(path):
         os.makedirs(path)
+        print "Cloning %s into %s..." % (repository, path)
         call([git, 'clone', repository, path])
     else:
         os.chdir(path)
+        print "Updating clone of %s in %s..." % (repository, path)
         call([git, 'checkout', 'master'])
         call([git, 'pull'])
         os.chdir(cwd)
 
-execfile(os.path.join(buildenv, 'sphinx', 'conf.py'))
+real_conf = os.path.join(buildenv, 'sphinx', 'conf.py')
+print "Including real configuration file (%s)..." % (real_conf, )
+execfile(real_conf)
