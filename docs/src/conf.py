@@ -18,6 +18,7 @@ def prepare(globs, locs):
     project = origin.rpartition('/')[2]
     if project.endswith('.git'):
         project = project[:-4]
+    locs['project'] = project
 
     for repository, path in (
         ('git://github.com/Erebot/Erebot_Buildenv.git', buildenv),
