@@ -10,8 +10,8 @@ cwd = os.getcwd()
 buildenv = os.path.join(cwd, 'vendor', 'erebot', 'buildenv')
 generic_doc = os.path.join(cwd, 'docs', 'src', 'generic')
 
-origin = Popen([git, 'config', '--local', 'remote.origin.url']
-               ).stdout.read().strip()
+origin = Popen([git, 'config', '--local', 'remote.origin.url'],
+               stdout=PIPE).stdout.read().strip()
 project = origin.rpartition('/')[2]
 if project.endswith('.git'):
     project = project[:-4]
