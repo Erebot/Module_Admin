@@ -6,9 +6,10 @@ from subprocess import call, Popen, PIPE
 git = Popen('which git 2> %s' % os.devnull, shell=True, stdout=PIPE
             ).stdout.read().strip()
 cwd = os.getcwd()
+root = os.path.abspath(os.path.join(cwd, '..', '..'))
 
-buildenv = os.path.join(cwd, 'vendor', 'erebot', 'buildenv')
-generic_doc = os.path.join(cwd, 'docs', 'src', 'generic')
+buildenv = os.path.join(root, 'vendor', 'erebot', 'buildenv')
+generic_doc = os.path.join(root, 'docs', 'src', 'generic')
 
 origin = Popen([git, 'config', '--local', 'remote.origin.url'],
                stdout=PIPE).stdout.read().strip()
