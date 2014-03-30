@@ -16,26 +16,29 @@
     along with Erebot.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace Erebot\Module;
+
 /**
  * \brief
  *      A module that provides several commands
  *      intended for administrators.
  */
-class   Erebot_Module_Admin
-extends Erebot_Module_Base
+class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnabled
 {
     /// A list of handlers registered by this module.
-    protected $_handlers;
+    protected $handlers;
 
     /// A list of triggers registered by this module.
-    protected $_triggers;
+    protected $triggers;
 
+    /// List of administrators.
+    protected $admins;
 
     /**
      * This method is called whenever the module is (re)loaded.
      *
      * \param int $flags
-     *      A bitwise OR of the Erebot_Module_Base::RELOAD_*
+     *      A bitwise OR of the Erebot::Module::Base::RELOAD_*
      *      constants. Your method should take proper actions
      *      depending on the value of those flags.
      *
@@ -43,24 +46,24 @@ extends Erebot_Module_Base
      *      See the documentation on individual RELOAD_*
      *      constants for a list of possible values.
      */
-    public function _reload($flags)
+    public function reload($flags)
     {
         if ($flags & self::RELOAD_HANDLERS) {
-            $registry   = $this->_connection->getModule(
-                'Erebot_Module_TriggerRegistry'
+            $registry   = $this->connection->getModule(
+                '\\Erebot\\Module\\TriggerRegistry'
             );
-            $matchAny  = Erebot_Utils::getVStatic($registry, 'MATCH_ANY');
+            $matchAny  = \Erebot\Utils::getVStatic($registry, 'MATCH_ANY');
 
             if (!($flags & self::RELOAD_INIT)) {
-                foreach ($this->_triggers as $name => $value) {
-                    $this->_connection->removeEventHandler(
-                        $this->_handlers[$name]
+                foreach ($this->triggers as $name => $value) {
+                    $this->connection->removeEventHandler(
+                        $this->handlers[$name]
                     );
                     $registry->freeTriggers($value, $matchAny);
                 }
             }
 
-            $this->_handlers = $this->_triggers = array();
+            $this->handlers = $this->triggers = array();
 
             $triggers = array(
                             'part'      => 'handlePart',
@@ -77,74 +80,74 @@ extends Erebot_Module_Base
                             'deowner'   => 'handleDeOwner',
                         );
 
-            $fmt = $this->getFormatter(FALSE);
+            $fmt = $this->getFormatter(false);
             foreach ($triggers as $default => $handler) {
                 $trigger = $this->parseString('trigger_'.$default, $default);
-                $this->_triggers[$default] =
+                $this->triggers[$default] =
                     $registry->registerTriggers($trigger, $matchAny);
-                if ($this->_triggers[$default] === NULL) {
+                if ($this->triggers[$default] === null) {
                     $msg = $fmt->_(
                         'Could not register trigger for admin command '.
                         '"<var name="command"/>"',
                         array('command' => $default)
                     );
-                    throw new Exception($msg);
+                    throw new \Exception($msg);
                 }
 
-                $this->_handlers[$default] = new Erebot_EventHandler(
-                    new Erebot_Callable(array($this, $handler)),
-                    new Erebot_Event_Match_All(
-                        new Erebot_Event_Match_InstanceOf(
-                            'Erebot_Interface_Event_ChanText'
+                $this->handlers[$default] = new \Erebot\EventHandler(
+                    \Erebot\CallableWrapper::wrap(array($this, $handler)),
+                    new \Erebot\Event\Match\All(
+                        new \Erebot\Event\Match\Type(
+                            '\\Erebot\\Interfaces\\Event\\ChanText'
                         ),
-                        new Erebot_Event_Match_Any(
-                            new Erebot_Event_Match_TextStatic($trigger, TRUE),
-                            new Erebot_Event_Match_TextWildcard(
+                        new \Erebot\Event\Match\Any(
+                            new \Erebot\Event\Match\TextStatic($trigger, true),
+                            new \Erebot\Event\Match\TextWildcard(
                                 $trigger.' *',
-                                TRUE
+                                true
                             )
                         )
                     )
                 );
-                $this->_connection->addEventHandler($this->_handlers[$default]);
+                $this->connection->addEventHandler($this->handlers[$default]);
             }
 
             // Join
             $trigger = $this->parseString('trigger_join', 'join');
-            $this->_triggers['join'] =
+            $this->triggers['join'] =
                 $registry->registerTriggers($trigger, $matchAny);
-            if ($this->_triggers['join'] === NULL) {
+            if ($this->triggers['join'] === null) {
                 $msg = $fmt->_(
                     'Could not register trigger for admin command "join"'
                 );
                 throw new Exception($msg);
             }
 
-            $this->_handlers['join'] = new Erebot_EventHandler(
-                new Erebot_Callable(array($this, 'handleJoin')),
-                new Erebot_Event_Match_All(
-                    new Erebot_Event_Match_InstanceOf(
-                        'Erebot_Interface_Event_Base_TextMessage'
+            $this->handlers['join'] = new \Erebot\EventHandler(
+                \Erebot\CallableWrapper::wrap(array($this, 'handleJoin')),
+                new \Erebot\Event\Match\All(
+                    new \Erebot\Event\Match\Type(
+                        '\\Erebot\\Interfaces\\Event\\Base\\TextMessage'
                     ),
-                    new Erebot_Event_Match_Any(
-                        new Erebot_Event_Match_TextWildcard(
+                    new \Erebot\Event\Match\Any(
+                        new \Erebot\Event\Match\TextWildcard(
                             $trigger.' &',
-                            TRUE
+                            true
                         ),
-                        new Erebot_Event_Match_TextWildcard(
+                        new \Erebot\Event\Match\TextWildcard(
                             $trigger.' & *'.
-                            TRUE
+                            true
                         )
                     )
                 )
             );
-            $this->_connection->addEventHandler($this->_handlers['join']);
+            $this->connection->addEventHandler($this->handlers['join']);
 
             // Reload
             $trigger = $this->parseString('trigger_reload', 'reload');
-            $this->_triggers['reload'] =
+            $this->triggers['reload'] =
                 $registry->registerTriggers($trigger, $matchAny);
-            if ($this->_triggers['reload'] === NULL) {
+            if ($this->triggers['reload'] === null) {
                 $msg = $fmt->_(
                     'Could not register trigger '.
                     'for admin command "reload"'
@@ -152,28 +155,63 @@ extends Erebot_Module_Base
                 throw new Exception($msg);
             }
 
-            $this->_handlers['reload'] = new Erebot_EventHandler(
-                new Erebot_Callable(array($this, 'handleReload')),
-                new Erebot_Event_Match_All(
-                    new Erebot_Event_Match_InstanceOf(
-                        'Erebot_Interface_Event_Base_TextMessage'
+            $this->handlers['reload'] = new \Erebot\EventHandler(
+                \Erebot\CallableWrapper::wrap(array($this, 'handleReload')),
+                new \Erebot\Event\Match\All(
+                    new \Erebot\Event\Match\Type(
+                        '\\Erebot\\Interfaces\\Event\\Base\\TextMessage'
                     ),
-                    new Erebot_Event_Match_Any(
-                        new Erebot_Event_Match_TextStatic($trigger, TRUE),
-                        new Erebot_Event_Match_TextWildcard($trigger.' *', TRUE)
+                    new \Erebot\Event\Match\Any(
+                        new \Erebot\Event\Match\TextStatic($trigger, true),
+                        new \Erebot\Event\Match\TextWildcard($trigger.' *', true)
                     )
                 )
             );
-            $this->_connection->addEventHandler($this->_handlers['reload']);
-            $this->_admins = array_filter(
+            $this->connection->addEventHandler($this->handlers['reload']);
+            $this->admins = array_filter(
                 explode(
                     ' ',
-                    str_replace(
-                        ',', ' ',
-                        trim($this->parseString('admins', ''))
-                    )
+                    str_replace(',', ' ', trim($this->parseString('admins', '')))
                 )
             );
+        }
+    }
+
+    /**
+     * Provides help about this module.
+     *
+     * \param Erebot::Interfaces::Event::Base_TextMessage $event
+     *      Some help request.
+     *
+     * \param Erebot::Interfaces::TextWrapper $words
+     *      Parameters passed with the request. This is the same
+     *      as this module's name when help is requested on the
+     *      module itself (in opposition with help on a specific
+     *      command provided by the module).
+     */
+    public function getHelp(
+        \Erebot\Interfaces\Event\Base\TextMessage $event,
+        \Erebot\Interfaces\TextWrapper $words
+    ) {
+        if ($event instanceof \Erebot\Interfaces\Event\Base\PrivateMessage) {
+            $target = $event->getSource();
+            $chan   = null;
+        } else {
+            $target = $chan = $event->getChan();
+        }
+
+        if ($words[0] !== get_called_class()) {
+            return false;
+        }
+
+        // Help on module.
+        if (count($words) == 1) {
+            $msg = $this->getFormatter($chan)->_(
+                "This module provides several commands that require ".
+                "administrator priviledges."
+            );
+            $this->sendMessage($target, $msg);
+            return true;
         }
     }
 
@@ -181,30 +219,32 @@ extends Erebot_Module_Base
      * Tests whether the given identity refers
      * to an administrator or not.
      *
-     * \param Erebot_Identity $identity
+     * \param Erebot::Identity $identity
      *      Identity to test.
      *
      * \retval bool
-     *      TRUE if the given identity refers to
-     *      an administrator, FALSE otherwise.
+     *      \b true if the given identity refers to
+     *      an administrator, \b false otherwise.
      */
-    protected function isAdmin(Erebot_Identity $identity)
+    protected function isAdmin(\Erebot\Identity $identity)
     {
-        $collator = $this->_connection->getCollator();
-        foreach ($this->_admins as $admin)
-            if ($identity->match($admin, $collator))
-                return TRUE;
-        return FALSE;
+        $collator = $this->connection->getCollator();
+        foreach ($this->admins as $admin) {
+            if ($identity->match($admin, $collator)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * Handles a request to make the bot
      * leave an IRC channel.
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to make the bot leave an IRC channel.
      *      The request may contain the name of the IRC
      *      channel to leave or "*" to make it leave all
@@ -217,21 +257,21 @@ extends Erebot_Module_Base
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handlePart(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
-    )
-    {
-        if (!$this->isAdmin($event->getSource()))
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\Base\TextMessage $event
+    ) {
+        if (!$this->isAdmin($event->getSource())) {
             return;
+        }
         $text       = $event->getText();
         $chans      = $text->getTokens(1, 1);
         $message    = $text->getTokens(2);
 
-        if ($chans == '*')
+        if ($chans == '*') {
             $targets    = '0';
-        else if ($this->_connection->isChannel((string) substr($chans, 0, 1)))
+        } elseif ($this->connection->isChannel((string) substr($chans, 0, 1))) {
             $targets    = $chans;
-        else {
+        } else {
             $targets    = $event->getChan();
             $message    = $text->getTokens(1);
         }
@@ -243,10 +283,10 @@ extends Erebot_Module_Base
      * Handles a request to make the bot
      * disconnect from the current server.
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to make the bot disconnect from the
      *      current IRC server.
      *      You may pass a message that will be used as the
@@ -255,29 +295,31 @@ extends Erebot_Module_Base
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleQuit(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
-    )
-    {
-        if (!$this->isAdmin($event->getSource()))
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\Base\TextMessage $event
+    ) {
+        if (!$this->isAdmin($event->getSource())) {
             return;
+        }
         $text   = $event->getText();
         $msg    = $text->getTokens(1);
-        if (rtrim($msg) == '')
-            $msg = NULL;
+        if (rtrim($msg) == '') {
+            $msg = null;
+        }
 
-        $eventsProducer = $this->_connection->getEventsProducer();
+        $eventsProducer = $this->connection->getEventsProducer();
         $disconnection = $eventsProducer->makeEvent('!Disconnect');
-        $this->_connection->dispatch($disconnection);
-        if (!$disconnection->preventDefault())
-            $this->_connection->disconnect($msg);
+        $this->connection->dispatch($disconnection);
+        if (!$disconnection->preventDefault()) {
+            $this->connection->disconnect($msg);
+        }
     }
 
     /**
      * Adds or removes a channel status for some user
      * on some IRC channel.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      The original request to add or remove a channel
      *      status from some user.
      *
@@ -285,34 +327,45 @@ extends Erebot_Module_Base
      *      A string describing the type of change to apply.
      *      ie. something like "+v" (voice) or "-o" (deop).
      */
-    protected function _setMode(
-        Erebot_Interface_Event_Base_TextMessage $event,
-                                                $mode
-    )
+    protected function setMode(\Erebot\Interfaces\Event\Base\TextMessage $event, $mode)
     {
         $source = $event->getSource();
-        if (!$this->isAdmin($source))
+        if (!$this->isAdmin($source)) {
             return;
+        }
+
+        if ($event instanceof \Erebot\Interfaces\Event\Base\PrivateMessage) {
+            $target = $event->getSource();
+            $chan   = null;
+        } else {
+            $target = $chan = $event->getChan();
+        }
+
+        $fmt = $this->getFormatter($chan);
+        $msg = $fmt->_('This server does not support this operation');
 
         try {
-            $capabilities = $this->_connection->getModule(
-                'Erebot_Module_ServerCapabilities',
-                NULL, FALSE
+            $capabilities = $this->connection->getModule(
+                '\\Erebot\\Module\\ServerCapabilities',
+                null,
+                false
             );
             try {
-                if (!$capabilities->isChannelPrivilege(substr($mode, 1)))
+                if (!$capabilities->isChannelPrivilege(substr($mode, 1))) {
+                    $this->sendMessage($target, $msg);
                     return;
-            }
-            catch (Erebot_InvalidValueException $e) {
+                }
+            } catch (\Erebot\InvalidValueException $e) {
                 // This should never happen, but still...
-                return FALSE;
+                return false;
             }
-        }
-        catch (Erebot_NotFoundException $e) {
+        } catch (\Erebot\NotFoundException $e) {
             // By default, we're strict about what modes
             // can be changed to follow RFC 1459.
-            if (!in_array(substr($mode, 1), array('o', 'v')))
+            if (!in_array(substr($mode, 1), array('o', 'v'))) {
+                $this->sendMessage($target, $msg);
                 return;
+            }
         }
 
         $text       = $event->getText();
@@ -324,230 +377,227 @@ extends Erebot_Module_Base
             return;
         }
 
-        for ($i = 1; $i <= $nbNicks; $i++)
+        for ($i = 1; $i <= $nbNicks; $i++) {
             $this->sendCommand($prefix.$text[$i]);
+        }
     }
 
     /**
      * Handles a request to give someone
      * the voice status (+v).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to give someone the voice status.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleVoice(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '+v');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        $this->setMode($event, '+v');
     }
 
     /**
      * Handles a request to take the voice
      * status from someone (-v).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to remove the voice status from someone.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeVoice(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '-v');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        $this->setMode($event, '-v');
     }
 
     /**
      * Handles a request to give someone
      * the half-operator status (+h).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to give someone the half-operator status.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleHalfOp(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '+h');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        /// @FIXME: The mode should not be hardcoded like that.
+        $this->setMode($event, '+h');
     }
 
     /**
      * Handles a request to take the half-operator
      * status from someone (-h).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to remove the half-operator status
      *      from someone.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeHalfOp(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '-h');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        /// @FIXME: The mode should not be hardcoded like that.
+        $this->setMode($event, '-h');
     }
 
     /**
      * Handles a request to give someone
      * the operator status (+o).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to give someone the operator status.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleOp(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '+o');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        $this->setMode($event, '+o');
     }
 
     /**
      * Handles a request to take the operator
      * status from someone (-o).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to remove the operator status from someone.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeOp(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '-o');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        $this->setMode($event, '-o');
     }
 
     /**
      * Handles a request to give someone
      * the protected status (+a).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to give someone the protected status.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleProtect(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '+a');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        /// @FIXME: The mode should not be hardcoded like that.
+        $this->setMode($event, '+a');
     }
 
     /**
      * Handles a request to take the protected
      * status from someone (-a).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to remove the protected status from someone.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeProtect(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '-a');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        /// @FIXME: The mode should not be hardcoded like that.
+        $this->setMode($event, '-a');
     }
 
     /**
      * Handles a request to give someone
      * the owner status (+q).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to give someone the owner status.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleOwner(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '+q');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        /// @FIXME: The mode should not be hardcoded like that.
+        $this->setMode($event, '+q');
     }
 
     /**
      * Handles a request to take the owner
      * status from someone (-q).
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to remove the owner status from someone.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleDeOwner(
-        Erebot_Interface_EventHandler   $handler,
-        Erebot_Interface_Event_ChanText $event
-    )
-    {
-        $this->_setMode($event, '-q');
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\ChanText $event
+    ) {
+        /// @FIXME: The mode should not be hardcoded like that.
+        $this->setMode($event, '-q');
     }
 
     /**
      * Handles a request to join some IRC channel.
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to join the IRC channel with the given
      *      name (passed as an additional parameter).
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleJoin(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
-    )
-    {
-        if (!$this->isAdmin($event->getSource()))
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\Base\TextMessage $event
+    ) {
+        if (!$this->isAdmin($event->getSource())) {
             return;
+        }
 
         $text   = $event->getText();
         $args   = $text->getTokens(1);
@@ -557,32 +607,32 @@ extends Erebot_Module_Base
     /**
      * Handles a request to reload the bot's modules.
      *
-     * \param Erebot_Interface_EventHandler $handler
+     * \param Erebot::Interfaces::EventHandler $handler
      *      Handler that triggered this event.
      *
-     * \param Erebot_Interface_Event_Base_TextMessage $event
+     * \param Erebot::Interfaces::Event::Base::TextMessage $event
      *      Request to reload all modules used by the bot.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleReload(
-        Erebot_Interface_EventHandler           $handler,
-        Erebot_Interface_Event_Base_TextMessage $event
-    )
-    {
-        if (!$this->isAdmin($event->getSource()))
+        \Erebot\Interfaces\EventHandler $handler,
+        \Erebot\Interfaces\Event\Base\TextMessage $event
+    ) {
+        if (!$this->isAdmin($event->getSource())) {
             return;
+        }
 
-        $bot = $this->_connection->getBot();
+        $bot = $this->connection->getBot();
         $bot->reload();
         return;
 
-        if ($event instanceof Erebot_Interface_Event_Base_Private) {
+        if ($event instanceof \Erebot\Interfaces\Event\Base\PrivateMessage) {
             $target = $event->getSource();
-            $chan   = NULL;
-        }
-        else
+            $chan   = null;
+        } else {
             $target = $chan = $event->getChan();
+        }
 
         $fmt = $this->getFormatter($chan);
         if (!function_exists('runkit_import')) {
@@ -600,41 +650,21 @@ extends Erebot_Module_Base
                 $parts = explode(DIRECTORY_SEPARATOR, substr($file, 0, -4));
                 while (count($parts)) {
                     $class = implode('_', $parts);
-                    if (interface_exists($class, FALSE))
+                    if (interface_exists($class, false)) {
                         continue 2;
+                    }
 
-                    if (class_exists($class, FALSE)) {
-                        if ($parts[0] != 'Erebot')
+                    if (class_exists($class, false)) {
+                        if ($parts[0] != 'Erebot') {
                             continue 2;
+                        }
                         break;
                     }
                     array_shift($parts);
                 }
-                if (!count($parts))
+                if (!count($parts)) {
                     continue;
-
-#                $reflector = new ReflectionClass($class);
-#                if ($reflector->isAbstract())
-#                    continue;
-
-#                $blacklist = array(
-#                    'Erebot_Module_AutoJoin',
-#                    'Erebot_Module_AZ',
-#                    'Erebot_Module_TriggerRegistry',
-#                    'Erebot_Event_Match_Any',
-#                    'Erebot_Event_Match_TextWildcard',
-#                    'Erebot_Module_Admin',
-#                    'Erebot_Event_Match_TextRegex',
-#                    'Erebot_Module_AutoConnect',
-#                    'Erebot_Module_Countdown',
-#                    'Erebot_Module_Helper',
-#                    'Erebot_Module_CtcpResponder',
-#                    'Erebot_Event_ChanText',
-#                    'Erebot_Module_IrcConnector',
-#                    'Erebot_Module_PingReply',
-#                );
-#                if (in_array($class, $blacklist))
-#                    continue;
+                }
 
                 echo "Reloading $file ($class)\n";
                 $ok = @runkit_import(
@@ -643,10 +673,11 @@ extends Erebot_Module_Base
                     RUNKIT_IMPORT_CLASSES
                 );
 
-                if (!$ok)
+                if (!$ok) {
                     $wrong[] = $file;
-                else
+                } else {
                     echo "Reloaded $file ($class)\n";
+                }
             }
         }
 
@@ -663,4 +694,3 @@ extends Erebot_Module_Base
         $this->sendMessage($target, $msg);
     }
 }
-

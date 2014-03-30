@@ -16,28 +16,31 @@
     along with Erebot.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Erebot_Identity
-{
-    protected $_identity;
-
-    public function __construct($identity)
+namespace Erebot {
+    class Identity
     {
-        $this->_identity = $identity;
-    }
+        protected $identity;
 
-    public function getNick()
-    {
-        return $this->_identity;
-    }
+        public function __construct($identity)
+        {
+            $this->identity = $identity;
+        }
 
-    public function match($admin, Erebot_Interface_IrcCollator $collator)
-    {
-        return ($admin == $this->_identity);
+        public function getNick()
+        {
+            return $this->identity;
+        }
+
+        public function match($admin, \Erebot\Interfaces\IrcCollator $collator)
+        {
+            return ($admin == $this->identity);
+        }
     }
 }
 
+namespace {
 abstract class  TextWrapper
-implements      Erebot_Interface_TextWrapper
+implements      \Erebot\Interfaces\TextWrapper
 {
     private $_chunks;
 
@@ -70,12 +73,12 @@ implements      Erebot_Interface_TextWrapper
 }
 
 class   TestModuleHelper
-extends Erebot_Module_Admin
+extends \Erebot\Module\Admin
 {
-    public function _reload($flags)
+    public function reload($flags)
     {
-        parent::_reload($flags);
-        $this->_admins = array('admin');
+        parent::reload($flags);
+        $this->admins = array('admin');
     }
 }
 
@@ -86,18 +89,18 @@ extends Erebot_Testenv_Module_TestCase
     {
         $this->_module = new TestModuleHelper(NULL);
         parent::setUp();
-        $this->_module->reload(
+        $this->_module->reloadModule(
             $this->_connection,
-            Erebot_Module_Base::RELOAD_MEMBERS
+            \Erebot\Module\Base::RELOAD_MEMBERS
         );
 
         $this->_disconnect = $this->getMock(
-            'Erebot_Interface_Event_Disconnect',
+            '\\Erebot\\Interfaces\\Event\\Disconnect',
             array(), array(), '', FALSE, FALSE
         );
 
         $this->_eventsProducer = $this->getMock(
-            'Erebot_Interface_IrcParser',
+            '\\Erebot\\Interfaces\\IrcParser',
             array(), array(), '', FALSE, FALSE
         );
 
@@ -109,12 +112,12 @@ extends Erebot_Testenv_Module_TestCase
         $this->_connection
             ->expects($this->any())
             ->method('getModule')
-            ->will($this->throwException(new Erebot_NotFoundException()));
+            ->will($this->throwException(new \Erebot\NotFoundException()));
 
         $this->_connection
             ->expects($this->any())
             ->method('getModule')
-            ->will($this->throwException(new Erebot_NotFoundException()));
+            ->will($this->throwException(new \Erebot\NotFoundException()));
 
         $this->_connection
             ->expects($this->any())
@@ -132,7 +135,7 @@ extends Erebot_Testenv_Module_TestCase
 
     public function tearDown()
     {
-        $this->_module->unload();
+        $this->_module->unloadModule();
         parent::tearDown();
     }
 
@@ -144,7 +147,7 @@ extends Erebot_Testenv_Module_TestCase
     protected function _getEvent($msg)
     {
         $event = $this->getMock(
-            'Erebot_Interface_Event_ChanText',
+            '\\Erebot\\Interfaces\\Event\\ChanText',
             array(), array(), '', FALSE, FALSE
         );
 
@@ -167,8 +170,8 @@ extends Erebot_Testenv_Module_TestCase
             ->expects($this->any())
             ->method('getSource')
             ->will($this->onConsecutiveCalls(
-                new Erebot_Identity('foo'),
-                new Erebot_Identity('admin')
+                new \Erebot\Identity('foo'),
+                new \Erebot\Identity('admin')
             ));
 
         return $event;
@@ -217,7 +220,7 @@ extends Erebot_Testenv_Module_TestCase
     public function testQuit()
     {
         $disconnect =  $this->getMock(
-            'Erebot_Interface_Event_Base_Generic',
+            '\\Erebot\\Interfaces\\Event\\Base\\Generic',
             array(), array(), '', FALSE, FALSE
         );
 
@@ -304,4 +307,4 @@ extends Erebot_Testenv_Module_TestCase
         $this->_triggerTest($callback, '!join #foo bar', 'JOIN #foo bar');
     }
 }
-
+} // namespace
