@@ -532,12 +532,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Erebot/Erebot_Buildenv.git",
-                "reference": "451c868e504b1455f8650bec1af7222324b2ed36"
+                "reference": "f9e84776e2decb6a92ce277e2adfee28ad5a69f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Erebot/Erebot_Buildenv/zipball/451c868e504b1455f8650bec1af7222324b2ed36",
-                "reference": "451c868e504b1455f8650bec1af7222324b2ed36",
+                "url": "https://api.github.com/repos/Erebot/Erebot_Buildenv/zipball/f9e84776e2decb6a92ce277e2adfee28ad5a69f5",
+                "reference": "f9e84776e2decb6a92ce277e2adfee28ad5a69f5",
                 "shasum": ""
             },
             "require": {
@@ -569,7 +569,7 @@
             "keywords": [
                 "Erebot"
             ],
-            "time": "2014-05-11 09:45:08"
+            "time": "2014-05-11 10:40:39"
         },
         {
             "name": "erebot/dom",
