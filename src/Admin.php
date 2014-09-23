@@ -228,12 +228,32 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
      */
     protected function isAdmin(\Erebot\Identity $identity)
     {
+        $styles = new \Erebot\Styling($this->mainCfg->getTranslator(get_class()));
+        $user   = $identity->getMask();
+        $this->logger and $this->logger->debug(
+            $styles->_(
+                'Checking whether <var name="user"/> is an administrator',
+                array('user' => $user)
+            )
+        );
         $collator = $this->connection->getCollator();
         foreach ($this->admins as $admin) {
             if ($identity->match($admin, $collator)) {
+                $this->logger and $this->logger->info(
+                    $styles->_(
+                        '<var name="user"/> was granted administrator access',
+                        array('user' => $user)
+                    )
+                );
                 return true;
             }
         }
+        $this->logger and $this->logger->warn(
+            $styles->_(
+                '<var name="user"/> is not a valid administrator',
+                array('user' => $user)
+            )
+        );
         return false;
     }
 
@@ -276,6 +296,16 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             $message    = $text->getTokens(1);
         }
 
+        $styles = new \Erebot\Styling($this->mainCfg->getTranslator(get_class()));
+        $this->logger and $this->logger->info(
+            $styles->_(
+                'Leaving <var name="targets"/> as requested by <var name="user"/>',
+                array(
+                    'user' => $event->getSource()->getMask(),
+                    'targets' => $targets,
+                )
+            )
+        );
         $this->sendCommand('PART '.$targets.' :'.$message);
     }
 
@@ -311,6 +341,13 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
         $disconnection = $eventsProducer->makeEvent('!Disconnect');
         $this->connection->dispatch($disconnection);
         if (!$disconnection->preventDefault()) {
+            $styles     = new \Erebot\Styling($this->mainCfg->getTranslator(get_class()));
+            $this->logger and $this->logger->info(
+                $styles->_(
+                    'Disconnecting as requested by <var name="user"/>',
+                    array('user' => $event->getSource()->getMask())
+                )
+            );
             $this->connection->disconnect($msg);
         }
     }
@@ -329,6 +366,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
      */
     protected function setMode(\Erebot\Interfaces\Event\Base\TextMessage $event, $mode)
     {
+        $styles = new \Erebot\Styling($this->mainCfg->getTranslator(get_class()));
         $source = $event->getSource();
         if (!$this->isAdmin($source)) {
             return;
@@ -373,11 +411,39 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
         $prefix     = 'MODE '.$event->getChan().' '.$mode.' :';
 
         if (!$nbNicks) {
+            $this->logger and $this->logger->info(
+                $styles->_(
+                    'Setting mode <var name="mode"/> ' .
+                    'on <var name="target"/> ' .
+                    'in channel <var name="chan"/> '
+                    'as requested by <var name="user"/>',
+                    array(
+                        'mode' => $mode,
+                        'chan' => $event->getChan(),
+                        'target' => $source->getNick(),
+                        'user' => $source->getMask(),
+                    )
+                )
+            );
             $this->sendCommand($prefix.$source->getNick());
             return;
         }
 
         for ($i = 1; $i <= $nbNicks; $i++) {
+            $this->logger and $this->logger->info(
+                $styles->_(
+                    'Setting mode <var name="mode"/> ' .
+                    'on <var name="target"/> ' .
+                    'in channel <var name="chan"/> '
+                    'as requested by <var name="user"/>',
+                    array(
+                        'mode' => $mode,
+                        'chan' => $event->getChan(),
+                        'target' => $text[$i],
+                        'user' => $source->getMask(),
+                    )
+                )
+            );
             $this->sendCommand($prefix.$text[$i]);
         }
     }
