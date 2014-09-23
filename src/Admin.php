@@ -415,7 +415,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
                 $styles->_(
                     'Setting mode <var name="mode"/> ' .
                     'on <var name="target"/> ' .
-                    'in channel <var name="chan"/> '
+                    'in channel <var name="chan"/> ' .
                     'as requested by <var name="user"/>',
                     array(
                         'mode' => $mode,
@@ -434,7 +434,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
                 $styles->_(
                     'Setting mode <var name="mode"/> ' .
                     'on <var name="target"/> ' .
-                    'in channel <var name="chan"/> '
+                    'in channel <var name="chan"/> ' .
                     'as requested by <var name="user"/>',
                     array(
                         'mode' => $mode,
