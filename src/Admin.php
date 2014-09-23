@@ -229,7 +229,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
     protected function isAdmin(\Erebot\Identity $identity)
     {
         $styles = new \Erebot\Styling($this->mainCfg->getTranslator(get_class()));
-        $user   = $identity->getMask();
+        $user   = $identity->getMask(\Erebot\Interfaces\Identity::CANON_IPV4);
         $this->logger and $this->logger->debug(
             $styles->_(
                 'Checking whether <var name="user"/> is an administrator',
@@ -301,7 +301,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             $styles->_(
                 'Leaving <var name="targets"/> as requested by <var name="user"/>',
                 array(
-                    'user' => $event->getSource()->getMask(),
+                    'user' => $event->getSource()->getMask(\Erebot\Interfaces\Identity::CANON_IPV4),
                     'targets' => $targets,
                 )
             )
@@ -345,7 +345,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             $this->logger and $this->logger->info(
                 $styles->_(
                     'Disconnecting as requested by <var name="user"/>',
-                    array('user' => $event->getSource()->getMask())
+                    array('user' => $event->getSource()->getMask(\Erebot\Interfaces\Identity::CANON_IPV4))
                 )
             );
             $this->connection->disconnect($msg);
@@ -421,7 +421,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
                         'mode' => $mode,
                         'chan' => $event->getChan(),
                         'target' => $source->getNick(),
-                        'user' => $source->getMask(),
+                        'user' => $source->getMask(\Erebot\Interfaces\Identity::CANON_IPV4),
                     )
                 )
             );
@@ -440,7 +440,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
                         'mode' => $mode,
                         'chan' => $event->getChan(),
                         'target' => $text[$i],
-                        'user' => $source->getMask(),
+                        'user' => $source->getMask(\Erebot\Interfaces\Identity::CANON_IPV4),
                     )
                 )
             );
