@@ -228,7 +228,8 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
      */
     protected function isAdmin(\Erebot\Identity $identity)
     {
-        $styles = new \Erebot\Styling($this->mainCfg->getTranslator(get_class()));
+        $factory = $this->getFactory('!Styling');
+        $styles = new $factory($this->mainCfg->getTranslator(get_class()));
         $user   = $identity->getMask(\Erebot\Interfaces\Identity::CANON_IPV4);
         $this->logger and $this->logger->debug(
             $styles->_(
