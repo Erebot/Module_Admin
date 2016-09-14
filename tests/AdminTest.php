@@ -17,26 +17,13 @@
 */
 
 namespace Erebot {
-    class Identity
-    {
-        protected $identity;
-
-        public function __construct($identity)
-        {
-            $this->identity = $identity;
-        }
-
-        public function getNick()
-        {
-            return $this->identity;
-        }
-
-        public function match($admin, \Erebot\Interfaces\IrcCollator $collator)
-        {
-            return ($admin == $this->identity);
-        }
-    }
+interface Identity
+extends   \Erebot\Interfaces\Identity
+{
+    public function match($admin, \Erebot\Interfaces\IrcCollator $collator);
 }
+} // namespace
+
 
 namespace {
 abstract class  TextWrapper
@@ -94,16 +81,8 @@ extends Erebot_Testenv_Module_TestCase
             \Erebot\Module\Base::RELOAD_MEMBERS
         );
 
-        $this->_disconnect = $this->getMock(
-            '\\Erebot\\Interfaces\\Event\\Disconnect',
-            array(), array(), '', FALSE, FALSE
-        );
-
-        $this->_eventsProducer = $this->getMock(
-            '\\Erebot\\Interfaces\\IrcParser',
-            array(), array(), '', FALSE, FALSE
-        );
-
+        $this->_disconnect = $this->getMockBuilder('\\Erebot\\Interfaces\\Event\\Disconnect')->getMock();
+        $this->_eventsProducer = $this->getMockBuilder('\\Erebot\\Interfaces\\IrcParser')->getMock();
         $this->_eventsProducer
             ->expects($this->any())
             ->method('makeEvent')
@@ -146,11 +125,7 @@ extends Erebot_Testenv_Module_TestCase
 
     protected function _getEvent($msg)
     {
-        $event = $this->getMock(
-            '\\Erebot\\Interfaces\\Event\\ChanText',
-            array(), array(), '', FALSE, FALSE
-        );
-
+        $event = $this->getMockBuilder('\\Erebot\\Interfaces\\Event\\ChanText')->getMock();
         $event
             ->expects($this->any())
             ->method('getConnection')
@@ -164,15 +139,33 @@ extends Erebot_Testenv_Module_TestCase
             ->method('getChan')
             ->will($this->returnValue('#test'));
 
+        $ident1 = $this->getMockBuilder('\\Erebot\\Identity')->getMock();
+        $ident1
+            ->expects($this->any())
+            ->method('getNick')
+            ->will($this->returnValue('foo'));
+        $ident1
+            ->expects($this->any())
+            ->method('match')
+            ->will($this->returnCallback(function ($a) { return $a == 'foo'; }));
+
+        $ident2 = $this->getMockBuilder('\\Erebot\\Identity')->getMock();
+        $ident2
+            ->expects($this->any())
+            ->method('getNick')
+            ->will($this->returnValue('admin'));
+        $ident2
+            ->expects($this->any())
+            ->method('match')
+            ->will($this->returnCallback(function ($a) { return $a == 'admin'; }));
+
+
         // On the first call, emulates a message from a non-admin,
         // on the second call, emulates a message from an admin.
         $event
             ->expects($this->any())
             ->method('getSource')
-            ->will($this->onConsecutiveCalls(
-                new \Erebot\Identity('foo'),
-                new \Erebot\Identity('admin')
-            ));
+            ->will($this->onConsecutiveCalls($ident1, $ident2));
 
         return $event;
     }
@@ -219,12 +212,9 @@ extends Erebot_Testenv_Module_TestCase
 
     public function testQuit()
     {
-        $disconnect =  $this->getMock(
-            '\\Erebot\\Interfaces\\Event\\Base\\Generic',
-            array(), array(), '', FALSE, FALSE
-        );
+        $disconnect =  $this->getMockBuilder('\\Erebot\\Interfaces\\Event\\Base\\Generic')->getMock();
 
-        $this->_connection
+        $this->_eventsProducer
             ->expects($this->any())
             ->method('makeEvent')
             ->will($this->returnValue($disconnect));
