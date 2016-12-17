@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Erebot_Module_Admin 1.0.x-dev\n"
 "Report-Msgid-Bugs-To: i18n@erebot.net\n"
-"POT-Creation-Date: 2014-09-23 21:13+0200\n"
+"POT-Creation-Date: 2016-12-17 20:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 #
-# File: src/Admin.php, line: 253
+# File: src/Admin.php, line: 254
 msgid "<var name=\"user\"/> is not a valid administrator"
 msgstr ""
 #
-# File: src/Admin.php, line: 244
+# File: src/Admin.php, line: 245
 msgid "<var name=\"user\"/> was granted administrator access"
 msgstr ""
 #
-# File: src/Admin.php, line: 235
+# File: src/Admin.php, line: 236
 msgid "Checking whether <var name=\"user\"/> is an administrator"
 msgstr ""
 #
@@ -40,40 +40,40 @@ msgstr ""
 msgid "Could not register trigger for admin command \"reload\""
 msgstr ""
 #
-# File: src/Admin.php, line: 347
+# File: src/Admin.php, line: 348
 msgid "Disconnecting as requested by <var name=\"user\"/>"
 msgstr ""
 #
-# File: src/Admin.php, line: 302
+# File: src/Admin.php, line: 303
 msgid "Leaving <var name=\"targets\"/> as requested by <var name=\"user\"/>"
 msgstr ""
 #
-# File: src/Admin.php, line: 416
-# File: src/Admin.php, line: 435
+# File: src/Admin.php, line: 417
+# File: src/Admin.php, line: 436
 msgid ""
 "Setting mode <var name=\"mode\"/> on <var name=\"target\"/> in channel <var "
-"name=\"chan\"/> "
+"name=\"chan\"/> as requested by <var name=\"user\"/>"
 msgstr ""
 #
-# File: src/Admin.php, line: 759
+# File: src/Admin.php, line: 760
 msgid "Successfully reloaded files."
 msgstr ""
 #
-# File: src/Admin.php, line: 752
+# File: src/Admin.php, line: 753
 msgid ""
 "The following files could not be reloaded: <for from=\"files\" item=\"file"
 "\"><var name=\"file\"/></for>"
 msgstr ""
 #
-# File: src/Admin.php, line: 706
+# File: src/Admin.php, line: 707
 msgid "The runkit extension is needed to perform hot reloads"
 msgstr ""
 #
 # File: src/Admin.php, line: 210
 msgid ""
-"This module provides several commands that require administrator priviledges."
+"This module provides several commands that require administrator privileges."
 msgstr ""
 #
-# File: src/Admin.php, line: 383
+# File: src/Admin.php, line: 384
 msgid "This server does not support this operation"
 msgstr ""

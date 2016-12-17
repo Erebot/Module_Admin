@@ -208,7 +208,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
         if (count($words) == 1) {
             $msg = $this->getFormatter($chan)->_(
                 "This module provides several commands that require ".
-                "administrator priviledges."
+                "administrator privileges."
             );
             $this->sendMessage($target, $msg);
             return true;
