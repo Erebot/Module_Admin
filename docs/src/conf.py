@@ -94,6 +94,7 @@ def prepare(globs, locs):
         shutil.rmtree(os.path.join(root, 'build'))
     except OSError:
         pass
+    os.mkdir(os.path.join(root, 'build'))
     shutil.move(
         os.path.join(root, 'docs', 'api', 'html'),
         os.path.join(root, 'build', 'apidoc'),
