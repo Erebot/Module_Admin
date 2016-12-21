@@ -110,7 +110,7 @@ def prepare(globs, locs):
     )
     try:
         shutil.move(
-            os.path.join(root, '%s.tagfile.xml' % component),
+            os.path.join(root, '%s.tagfile.xml' % project),
             os.path.join(root, 'build', 'apidoc', '%s.tagfile.xml' % component)
         )
     except OSError:
