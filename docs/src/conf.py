@@ -123,9 +123,9 @@ def prepare(globs, locs):
 
     # Compile translation catalogs.
     for locale_dir in glob.iglob(os.path.join(root, 'docs', 'i18n', '*')):
-        for root, dirnames, filenames in os.walk(locale_dir):
+        for base, dirnames, filenames in os.walk(locale_dir):
             for po in fnmatch.filter(filenames, '*.po'):
-                po = os.path.join(root, po)
+                po = os.path.join(base, po)
                 mo = po[:-3] + '.mo'
                 call([pybabel, 'compile', '-f', '--statistics',
                       '-i', po, '-o', mo])
