@@ -1,3 +1,4 @@
+/build
 /vendor
 
 /data/i18n/*/LC_MESSAGES/*.mo
