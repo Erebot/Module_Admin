@@ -14,9 +14,9 @@ Contents:
 
 Current status on http://travis-ci.org/: |travis|
 
-..  |travis| image:: https://secure.travis-ci.org/Erebot/Erebot_Module_Admin.png
+..  |travis| image:: https://secure.travis-ci.org/Erebot/Module_Admin.svg
     :alt: UNKNOWN
-    :target: https://travis-ci.org/Erebot/Erebot_Module_Admin/
+    :target: https://travis-ci.org/Erebot/Module_Admin/
 
 ..  _`Erebot`:
     https://www.erebot.net/
