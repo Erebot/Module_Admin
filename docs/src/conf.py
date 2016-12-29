@@ -47,7 +47,7 @@ def prepare(globs, locs):
     origin = Popen([git, 'config', '--local', 'remote.origin.url'],
                     stdout=PIPE).stdout.read().strip()
     git_tag = Popen([git, 'describe', '--tags', '--exact', '--first-parent'],
-                    stdout=PIPE, stderr=os.devnull).communicate()[0].strip()
+                    stdout=PIPE).communicate()[0].strip()
     git_hash = Popen([git, 'rev-parse', 'HEAD'],
                     stdout=PIPE).communicate()[0].strip()
     project = origin.rpartition('/')[2]
