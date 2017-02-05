@@ -69,6 +69,10 @@ extends \Erebot\Module\Admin
     }
 }
 
+if (!class_exists('PHPUnit_Framework_TestCase')) {
+    class_alias('\\PHPUnit\\Framework\\TestCase', 'PHPUnit_Framework_TestCase');
+}
+
 class   AdminTest
 extends Erebot_Testenv_Module_TestCase
 {
