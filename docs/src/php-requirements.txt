@@ -1,1 +1,0 @@
-git://github.com/Erebot/GenericDoc.git  docs/src/generic
