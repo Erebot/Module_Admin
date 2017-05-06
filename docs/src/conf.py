@@ -8,7 +8,9 @@ from subprocess import call
 def prepare(globs, locs):
     # RTD defaults the current working directory to where conf.py resides.
     # In our case, that means <root>/docs/src/.
-    root = abspath(join(os.getcwd(), '..', '..'))
+    cwd = os.getcwd()
+    root = abspath(join(cwd, '..', '..'))
+    os.chdir(root)
 
     # Download the PHP binary & composer.phar if necessary
     base = 'https://github.com/Erebot/Buildenv/releases/download/1.4.0'
@@ -24,6 +26,7 @@ def prepare(globs, locs):
           '--no-progress'], env=os.environ)
 
     # Load the second-stage configuration file.
+    os.chdir(cwd)
     conf = join(root, 'vendor', 'erebot', 'buildenv', 'sphinx', 'rtd.py')
     print "Including the second configuration file (%s)..." % (conf, )
     execfile(conf, globs, locs)
