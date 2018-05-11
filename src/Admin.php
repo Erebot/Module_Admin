@@ -281,7 +281,8 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
         \Erebot\Interfaces\EventHandler $handler,
         \Erebot\Interfaces\Event\Base\TextMessage $event
     ) {
-        if (!$this->isAdmin($event->getSource())) {
+        $source = $event->getSource();
+        if (!$this->isAdmin($source)) {
             return;
         }
         $text       = $event->getText();
@@ -302,7 +303,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             $styles->_(
                 'Leaving <var name="targets"/> as requested by <var name="user"/>',
                 array(
-                    'user' => $event->getSource()->getMask(\Erebot\Interfaces\Identity::CANON_IPV4),
+                    'user' => $source->getMask(\Erebot\Interfaces\Identity::CANON_IPV4),
                     'targets' => $targets,
                 )
             )
@@ -329,7 +330,8 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
         \Erebot\Interfaces\EventHandler $handler,
         \Erebot\Interfaces\Event\Base\TextMessage $event
     ) {
-        if (!$this->isAdmin($event->getSource())) {
+        $source = $event->getSource();
+        if (!$this->isAdmin($source)) {
             return;
         }
         $text   = $event->getText();
@@ -346,7 +348,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             $this->logger and $this->logger->info(
                 $styles->_(
                     'Disconnecting as requested by <var name="user"/>',
-                    array('user' => $event->getSource()->getMask(\Erebot\Interfaces\Identity::CANON_IPV4))
+                    array('user' => $source->getMask(\Erebot\Interfaces\Identity::CANON_IPV4))
                 )
             );
             $this->connection->disconnect($msg);

@@ -148,6 +148,10 @@ extends Erebot_Testenv_Module_TestCase
             ->expects($this->any())
             ->method('match')
             ->will($this->returnCallback(function ($a) { return $a == 'foo'; }));
+        $ident1
+            ->expects($this->any())
+            ->method('getMask')
+            ->will($this->returnValue('foo!ident@localhost'));
 
         $ident2 = $this->getMockBuilder('\\Erebot\\Identity')->getMock();
         $ident2
@@ -158,6 +162,10 @@ extends Erebot_Testenv_Module_TestCase
             ->expects($this->any())
             ->method('match')
             ->will($this->returnCallback(function ($a) { return $a == 'admin'; }));
+        $ident2
+            ->expects($this->any())
+            ->method('getMask')
+            ->will($this->returnValue('admin!ident@localhost'));
 
 
         // On the first call, emulates a message from a non-admin,
