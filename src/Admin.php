@@ -95,7 +95,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
                 }
 
                 $this->handlers[$default] = new \Erebot\EventHandler(
-                    \Erebot\CallableWrapper::wrap(array($this, $handler)),
+                    array($this, $handler),
                     new \Erebot\Event\Match\All(
                         new \Erebot\Event\Match\Type(
                             '\\Erebot\\Interfaces\\Event\\ChanText'
@@ -124,7 +124,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             }
 
             $this->handlers['join'] = new \Erebot\EventHandler(
-                \Erebot\CallableWrapper::wrap(array($this, 'handleJoin')),
+                array($this, 'handleJoin'),
                 new \Erebot\Event\Match\All(
                     new \Erebot\Event\Match\Type(
                         '\\Erebot\\Interfaces\\Event\\Base\\TextMessage'
@@ -156,7 +156,7 @@ class Admin extends \Erebot\Module\Base implements \Erebot\Interfaces\HelpEnable
             }
 
             $this->handlers['reload'] = new \Erebot\EventHandler(
-                \Erebot\CallableWrapper::wrap(array($this, 'handleReload')),
+                array($this, 'handleReload'),
                 new \Erebot\Event\Match\All(
                     new \Erebot\Event\Match\Type(
                         '\\Erebot\\Interfaces\\Event\\Base\\TextMessage'
