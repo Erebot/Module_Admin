@@ -178,16 +178,16 @@
         },
         {
             "name": "erebot/triggerregistry-module",
-            "version": "0.3.1",
+            "version": "0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Erebot/Module_TriggerRegistry.git",
-                "reference": "a315e157adfd5bfdec827b73ca7688ec91097452"
+                "reference": "5b981d38ab8c5b6bd03e07deb3adad71303592a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Erebot/Module_TriggerRegistry/zipball/a315e157adfd5bfdec827b73ca7688ec91097452",
-                "reference": "a315e157adfd5bfdec827b73ca7688ec91097452",
+                "url": "https://api.github.com/repos/Erebot/Module_TriggerRegistry/zipball/5b981d38ab8c5b6bd03e07deb3adad71303592a0",
+                "reference": "5b981d38ab8c5b6bd03e07deb3adad71303592a0",
                 "shasum": ""
             },
             "require": {
@@ -228,7 +228,7 @@
                 "irc",
                 "module"
             ],
-            "time": "2018-05-12T12:29:03+00:00"
+            "time": "2019-01-06T17:40:07+00:00"
         },
         {
             "name": "erebot/uri",
